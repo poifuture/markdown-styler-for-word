@@ -1,1 +1,1 @@
-# word-add-in-markdown-style
+# Word Add-in Markdown Style
