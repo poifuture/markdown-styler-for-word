@@ -1,18 +1,18 @@
-import * as React from "react";
+import * as React from "react"
 
 export interface HeroListItem {
-  icon: string;
-  primaryText: string;
+  icon: string
+  primaryText: string
 }
 
 export interface HeroListProps {
-  message: string;
-  items: HeroListItem[];
+  message: string
+  items: HeroListItem[]
 }
 
 export default class HeroList extends React.Component<HeroListProps> {
   render() {
-    const { children, items, message } = this.props;
+    const { children, items, message } = this.props
 
     const listItems = items.map((item, index) => (
       <li className="ms-ListItem" key={index}>
@@ -21,7 +21,7 @@ export default class HeroList extends React.Component<HeroListProps> {
           {item.primaryText}
         </span>
       </li>
-    ));
+    ))
     return (
       <main className="ms-welcome__main">
         <h2 className="ms-font-xl ms-fontWeight-semilight ms-fontColor-neutralPrimary ms-u-slideUpIn20">
@@ -32,6 +32,6 @@ export default class HeroList extends React.Component<HeroListProps> {
         </ul>
         {children}
       </main>
-    );
+    )
   }
 }

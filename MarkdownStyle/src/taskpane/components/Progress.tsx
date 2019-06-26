@@ -1,15 +1,15 @@
-import * as React from "react";
-import { Spinner, SpinnerType } from "office-ui-fabric-react";
+import * as React from "react"
+import { Spinner, SpinnerType } from "office-ui-fabric-react"
 
 export interface ProgressProps {
-  logo: string;
-  message: string;
-  title: string;
+  logo: string
+  message: string
+  title: string
 }
 
 export default class Progress extends React.Component<ProgressProps> {
   render() {
-    const { logo, message, title } = this.props;
+    const { logo, message, title } = this.props
 
     return (
       <section className="ms-welcome__progress ms-u-fadeIn500">
@@ -19,6 +19,6 @@ export default class Progress extends React.Component<ProgressProps> {
         </h1>
         <Spinner type={SpinnerType.large} label={message} />
       </section>
-    );
+    )
   }
 }
