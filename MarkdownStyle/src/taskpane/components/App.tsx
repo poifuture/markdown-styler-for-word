@@ -49,9 +49,9 @@ We aim to apply only styles to your document without changing your content. Howe
 
 1. Clear all pre-existing styles
 1. Format your document with [Prettifier](https://github.com/prettier/prettier)
-  1. Prettifier will format your markdown
-  1. Prettifier will format your front matter
-  1. Prettifier will format your code block
+   1. Prettifier will format your markdown
+   1. Prettifier will format your front matter
+   1. Prettifier will format your code block
 1. [Pending] Parse your markdown styles with [Remark](https://github.com/remarkjs/remark)
 1. [Pending] Apply syntax highlights to your code block with [Highlightjs](https://github.com/highlightjs/highlight.js/)
 
@@ -87,13 +87,31 @@ const a=1
 
 # Known Issues
 
-## Consequent Whitespcaces
+## Whitespcaces
+
+As every web UI developer knows, a normal space (0x20) is different from a display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will replace all nbsp to space before processing, and put nbsp back in document. It works fine for most cases, however, in rare scenarios, you will get nbsp in your clipboard. So becareful.
 
 Refresh
 
 ## MS Word doesn't have a vim plugin
 
 `
+
+const devMarkdown = `
+- Item1
+  - Item1.1
+- Item2
+`
+
+const hex = str => str.split("").map(ch => ch.charCodeAt(0))
+
+const getCleanText = str =>
+  str
+    .replace(/(?:\r\n|\r|\n)/g, "\n") // crlf
+    .replace(/\xA0/g, " ") // &nbsp;
+
+const getDisplayText = str =>
+  str.replace(/[ ]{2,}/g, (match: String) => "\xA0".repeat(match.length)) // &nbsp;
 
 const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
   const range = options.range
@@ -161,9 +179,9 @@ export default class App extends React.Component<AppProps, AppState> {
 
   click = async () => {
     return Word.run(async context => {
-      const paragraph = context.document.body.insertParagraph(
-        "Hello World",
-        Word.InsertLocation.end
+      const paragraph = context.document.body.insertText(
+        devMarkdown,
+        Word.InsertLocation.replace
       )
       paragraph.font.color = "blue"
       await context.sync()
@@ -210,11 +228,11 @@ export default class App extends React.Component<AppProps, AppState> {
         console.debug("Fetching document content...")
         remarkRange.load()
         await context.sync()
-        const originalText = remarkRange.text
+        const originalText = getCleanText(remarkRange.text)
         if (originalText == "") {
           console.error("No text is selected")
         }
-        console.info("Original Text: ", originalText)
+        console.info("Original Text: ", originalText, hex(originalText))
 
         console.debug("Prettifying markdown document...")
         const prettyText = Prettier.format(originalText, {
@@ -222,15 +240,18 @@ export default class App extends React.Component<AppProps, AppState> {
           plugins: [PrettierMarkdown],
           proseWrap: "never", // [always,never,preserve]
         })
-        console.info("Pretty Text: ", prettyText)
+        console.info("Pretty Text: ", prettyText, hex(prettyText))
 
         console.debug("Replacing markdown document...")
-        remarkRange.insertText(prettyText, Word.InsertLocation.replace)
+        remarkRange.insertText(
+          getDisplayText(prettyText),
+          Word.InsertLocation.replace
+        )
         remarkRange.load()
         await context.sync()
 
         console.debug("Parsing markdown document...")
-        const remarkText = remarkRange.text
+        const remarkText = getCleanText(remarkRange.text)
         const remarkPromise = new Promise((resolve, reject) => {
           Unified()
             .use(RemarkParse)
