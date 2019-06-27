@@ -37,7 +37,8 @@
     "remark-parse": "^6.0.3",
     "remark-preset-lint-recommended": "^3.0.3",
     "remark-stringify": "^6.0.4",
-    "unified": "^8.0.0"
+    "unified": "^8.0.0",
+    "unist-util-visit": "^1.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",

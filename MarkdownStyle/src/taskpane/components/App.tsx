@@ -1,8 +1,9 @@
 import * as React from "react"
-// import Unified from "unified"
-// import RemarkParse from "remark-parse"
-// import RemarkStringify from "remark-stringify"
-// import RemarkRecommended from "remark-preset-lint-recommended"
+import Unified, * as UnifiedModule from "unified"
+import * as Unist from "unist"
+import UnistVisit from "unist-util-visit"
+import RemarkParse from "remark-parse"
+import RemarkStringify from "remark-stringify"
 import { Button, ButtonType } from "office-ui-fabric-react"
 import HeroList, { HeroListItem } from "./HeroList"
 import Progress from "./Progress"
@@ -31,6 +32,7 @@ This word add-in aims to apply MS Word styles to your document without changing 
 1. Insert Readme and read the warning
 1. (Optional) Setup the document theme
 1. Click "Remark Document"
+1. (Optional) Customize the builtin styles (Normal, Heading1, etc.) of the document theme in MS Word
 
 # Warning
 
@@ -40,7 +42,7 @@ We aim to apply only styles to your document without changing your content. Howe
 
 * Chinese friends cannot access Google Doc easily
 * Good integration with MS products family
-* Free! (For personal use)(From developer: We paid Office 365)
+* Free! (For personal use) (From developer: We paid Office 365)
 * ~~Rich functionality~~ Buggy
 
 # What it does
@@ -73,13 +75,62 @@ So please always remember to insert an empty line between your paragraphs.
 
 ## Table
 
+Column 1 | Column 2 has a long head | c3 | c4
+--- | --- | --- | ---
+c1 | c2 | Column 3 is long | c4
+
+## Code
+
+\`\`\`javascript
+const a=1
+\`\`\`
+
 # Known Issues
 
 ## Consequent Whitespcaces
 
+Refresh
+
 ## MS Word doesn't have a vim plugin
 
 `
+
+const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
+  const range = options.range
+  const RemarkWordTransformer: UnifiedModule.Transformer = async (
+    tree,
+    _
+  ): Promise<Unist.Node> => {
+    console.debug("Tree: ", tree)
+    range.paragraphs.load()
+    await range.context.sync()
+    UnistVisit(tree, null, (node: Unist.Node) => {
+      console.debug("Node: ", node)
+      switch (node.type) {
+        case "heading": {
+          const nodeHeading: any = node
+          const WordHeadingStyles = [
+            Word.Style.title,
+            Word.Style.heading1,
+            Word.Style.heading2,
+            Word.Style.heading3,
+            Word.Style.heading4,
+            Word.Style.heading5,
+            Word.Style.heading6,
+            Word.Style.heading7,
+            Word.Style.heading8,
+            Word.Style.heading9,
+          ]
+          range.paragraphs.items[node.position.start.line - 1].styleBuiltIn =
+            WordHeadingStyles[nodeHeading.depth]
+          break
+        }
+      }
+    })
+    return tree
+  }
+  return RemarkWordTransformer
+}
 
 export default class App extends React.Component<AppProps, AppState> {
   constructor(props, context) {
@@ -154,7 +205,7 @@ export default class App extends React.Component<AppProps, AppState> {
           : context.document.getSelection()
 
         console.debug("Clearing original format...")
-        remarkRange.styleBuiltIn = Word.Style.noSpacing
+        remarkRange.styleBuiltIn = Word.Style.normal
 
         console.debug("Fetching document content...")
         remarkRange.load()
@@ -169,26 +220,31 @@ export default class App extends React.Component<AppProps, AppState> {
         const prettyText = Prettier.format(originalText, {
           parser: "markdown",
           plugins: [PrettierMarkdown],
-          proseWrap: "always",
+          proseWrap: "never", // [always,never,preserve]
         })
-
-        // const prettifyPromise = new Promise((resolve, reject) => {
-        //   Unified()
-        //     .use(RemarkParse)
-        //     .use(RemarkStringify)
-        //     .use(RemarkRecommended)
-        //     .process(originalText, (error, prettyText) => {
-        //       if (error) {
-        //         reject(error)
-        //       }
-        //       resolve(String(prettyText))
-        //     })
-        // })
-        // const prettyText = await prettifyPromise
-
         console.info("Pretty Text: ", prettyText)
 
+        console.debug("Replacing markdown document...")
         remarkRange.insertText(prettyText, Word.InsertLocation.replace)
+        remarkRange.load()
+        await context.sync()
+
+        console.debug("Parsing markdown document...")
+        const remarkText = remarkRange.text
+        const remarkPromise = new Promise((resolve, reject) => {
+          Unified()
+            .use(RemarkParse)
+            .use(RemarkWord, { range: remarkRange })
+            .use(RemarkStringify)
+            .process(remarkText, (error, remarkAST) => {
+              if (error) {
+                reject(error)
+              }
+              resolve(remarkAST)
+            })
+        })
+        const remarkAST = await remarkPromise
+        console.info("AST: ", remarkAST)
 
         await context.sync()
       } catch (error) {
