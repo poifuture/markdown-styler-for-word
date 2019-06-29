@@ -10,7 +10,13 @@ module.exports = async (env, options) => {
   const config = {
     devtool: "source-map",
     entry: {
-      vendor: ["react", "react-dom", "core-js", "office-ui-fabric-react"],
+      vendor: [
+        "react",
+        "react-dom",
+        "core-js",
+        "office-ui-fabric-react",
+        "unified",
+      ],
       taskpane: ["react-hot-loader/patch", "./src/taskpane/index.tsx"],
       commands: "./src/commands/commands.ts",
     },

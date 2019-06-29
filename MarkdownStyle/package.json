@@ -26,11 +26,18 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@types/unist": "^2.0.3",
+    "@types/vfile": "^3.0.2",
     "core-js": "^2.6.1",
     "es6-promise": "^4.2.6",
     "office-ui-fabric-react": "^6.139.0",
+    "prettier": "^1.18.2",
     "react": "^16.8.2",
-    "react-dom": "^16.8.2"
+    "react-dom": "^16.8.2",
+    "remark-parse": "^6.0.3",
+    "remark-preset-lint-recommended": "^3.0.3",
+    "remark-stringify": "^6.0.4",
+    "unified": "^8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
