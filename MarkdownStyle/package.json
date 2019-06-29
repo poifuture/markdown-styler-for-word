@@ -37,11 +37,12 @@
     "remark-parse": "^6.0.3",
     "remark-preset-lint-recommended": "^3.0.3",
     "remark-stringify": "^6.0.4",
-    "unified": "^8.0.0",
-    "unist-util-visit": "^1.4.1"
+    "unified": "^8.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.4",
+    "@babel/core": "7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
     "@types/es6-collections": "^0.5.29",
     "@types/es6-promise": "0.0.32",
     "@types/office-js": "^1.0.9",
@@ -71,6 +72,7 @@
     "ts-loader": "^6.0.2",
     "typescript": "^3.5.1",
     "webpack": "^4.33.0",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.5.1"
   }
