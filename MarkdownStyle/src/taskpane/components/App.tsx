@@ -1,7 +1,6 @@
 import * as React from "react"
 import Unified, * as UnifiedModule from "unified"
 import * as Unist from "unist"
-import UnistVisit from "unist-util-visit"
 import RemarkParse from "remark-parse"
 import RemarkStringify from "remark-stringify"
 import { Button, ButtonType } from "office-ui-fabric-react"
@@ -9,6 +8,7 @@ import HeroList, { HeroListItem } from "./HeroList"
 import Progress from "./Progress"
 import Prettier from "prettier/standalone"
 import PrettierMarkdown from "prettier/parser-markdown"
+import { hex, sleep } from "../utils"
 
 export interface AppProps {
   title: string
@@ -71,6 +71,10 @@ So please always remember to insert an empty line between your paragraphs.
 
 ## Headings
 
+## A **Strong** Title
+
+There is a **strong** word and **some phrases** in a sentence.
+
 ## List
 
 ## Table
@@ -91,19 +95,19 @@ const a=1
 
 As every web UI developer knows, a normal space (0x20) is different from a display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will replace all nbsp to space before processing, and put nbsp back in document. It works fine for most cases, however, in rare scenarios, you will get nbsp in your clipboard. So becareful.
 
-Refresh
+# Inline Style
+
+Sometimes the inline style suddenly apply to the entire paragraph, this is a [bug](https://github.com/OfficeDev/office-js/issues/586) in Word Online. The workaround is not to remark the end of file.
+
+
 
 ## MS Word doesn't have a vim plugin
 
 `
 
 const devMarkdown = `
-- Item1
-  - Item1.1
-- Item2
+It's a **strong** word
 `
-
-const hex = str => str.split("").map(ch => ch.charCodeAt(0))
 
 const getCleanText = str =>
   str
@@ -112,6 +116,74 @@ const getCleanText = str =>
 
 const getDisplayText = str =>
   str.replace(/[ ]{2,}/g, (match: String) => "\xA0".repeat(match.length)) // &nbsp;
+
+const getNodeParagraph = async (
+  range: Word.Range,
+  node: Unist.Node
+): Promise<Word.Paragraph> => {
+  range.paragraphs.load()
+  await range.paragraphs.context.sync()
+  return range.paragraphs.items[node.position.start.line - 1]
+}
+
+const getNodeRange = async (
+  range: Word.Range,
+  node: Unist.Node
+): Promise<Word.Range> => {
+  const nodeParagraph = await getNodeParagraph(range, node)
+  nodeParagraph.load()
+  await nodeParagraph.context.sync()
+  const charRanges = nodeParagraph.getTextRanges([""])
+  charRanges.load()
+  await charRanges.context.sync()
+  const startCursor = charRanges.items[node.position.start.column - 1]
+  const endCursor = charRanges.items[node.position.end.column - 2]
+  const nodeRange = startCursor.expandTo(endCursor)
+  return nodeRange
+}
+
+const expandToParagraph = (range: Word.Range): Word.Range => {
+  const startCursor = range.paragraphs
+    .getFirst()
+    .getRange(Word.RangeLocation.start)
+  const endCursor = range.paragraphs.getLast().getRange(Word.RangeLocation.end)
+  return range.expandTo(startCursor).expandTo(endCursor)
+}
+
+const excludeEOF = async (
+  range: Word.Range,
+  eof: Word.Range
+): Promise<Word.Range> => {
+  range.load()
+  await range.context.sync()
+  const hitEOF = range.intersectWithOrNullObject(eof)
+  hitEOF.load()
+  await hitEOF.context.sync()
+  if (hitEOF.isNullObject) {
+    console.warn("Miss EOF")
+    return range
+  }
+  console.error("Hit EOF")
+  const startCursor = range.getRange(Word.RangeLocation.start)
+  const endCursor = range.paragraphs
+    .getLast()
+    .getRange(Word.RangeLocation.start)
+  return startCursor.expandTo(endCursor)
+}
+
+interface UnistParentNode extends Unist.Node {
+  children?: Unist.Node[]
+}
+type VisitorFunction = (node: Unist.Node) => Promise<void>
+const UnistDFS = async (node: Unist.Node, visitor: VisitorFunction) => {
+  await visitor(node)
+  const extendedNode = node as UnistParentNode
+  if (extendedNode.children) {
+    for (let index = 0; index < extendedNode.children.length; index++) {
+      await UnistDFS(extendedNode.children[index], visitor)
+    }
+  }
+}
 
 const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
   const range = options.range
@@ -122,7 +194,7 @@ const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
     console.debug("Tree: ", tree)
     range.paragraphs.load()
     await range.context.sync()
-    UnistVisit(tree, null, (node: Unist.Node) => {
+    await UnistDFS(tree, async (node: Unist.Node) => {
       console.debug("Node: ", node)
       switch (node.type) {
         case "heading": {
@@ -139,8 +211,19 @@ const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
             Word.Style.heading8,
             Word.Style.heading9,
           ]
-          range.paragraphs.items[node.position.start.line - 1].styleBuiltIn =
-            WordHeadingStyles[nodeHeading.depth]
+          const nodeParagraph = await getNodeParagraph(range, node)
+          nodeParagraph.styleBuiltIn = WordHeadingStyles[nodeHeading.depth]
+          break
+        }
+        case "strong": {
+          try {
+            const nodeRange = await getNodeRange(range, node)
+            nodeRange.font.bold = true
+            nodeRange.font.color = "darkblue"
+            await nodeRange.parentBody.context.sync()
+          } catch (error) {
+            console.error(error)
+          }
           break
         }
       }
@@ -215,63 +298,75 @@ export default class App extends React.Component<AppProps, AppState> {
   }
 
   remarkRange = async (entire: boolean) => {
-    return Word.run(async context => {
-      try {
-        console.debug("Getting remark range...")
-        const remarkRange = entire
-          ? context.document.body.getRange()
-          : context.document.getSelection()
+    try {
+      await Word.run(async context => {
+        try {
+          await context.sync()
+          console.debug("Getting remark range...")
+          const userRange = entire
+            ? context.document.body.getRange()
+            : expandToParagraph(context.document.getSelection())
 
-        console.debug("Clearing original format...")
-        remarkRange.styleBuiltIn = Word.Style.normal
+          const remarkRange = await excludeEOF(
+            // It **may** reduce the chance to hit the inline style bug
+            userRange,
+            context.document.body.getRange(Word.RangeLocation.end)
+          )
 
-        console.debug("Fetching document content...")
-        remarkRange.load()
-        await context.sync()
-        const originalText = getCleanText(remarkRange.text)
-        if (originalText == "") {
-          console.error("No text is selected")
+          console.debug("Clearing original format...")
+          remarkRange.styleBuiltIn = Word.Style.normal
+
+          console.debug("Fetching document content...")
+          remarkRange.load()
+          await context.sync()
+          const originalText = getCleanText(remarkRange.text)
+          if (originalText == "") {
+            console.error("No text is selected")
+          }
+          console.info("Original Text: ", originalText, await hex(originalText))
+
+          console.debug("Prettifying markdown document...")
+          const prettyText = Prettier.format(originalText, {
+            parser: "markdown",
+            plugins: [PrettierMarkdown],
+            proseWrap: "never", // [always,never,preserve]
+          })
+          console.info("Pretty Text: ", prettyText, await hex(prettyText))
+
+          console.debug("Replacing markdown document...")
+          remarkRange.insertText(
+            getDisplayText(prettyText),
+            Word.InsertLocation.replace
+          )
+          remarkRange.load()
+          await context.sync()
+
+          console.debug("Parsing markdown document...")
+          const remarkText = getCleanText(remarkRange.text)
+          const remarkPromise = new Promise((resolve, reject) => {
+            Unified()
+              .use(RemarkParse)
+              .use(RemarkWord, { range: remarkRange })
+              .use(RemarkStringify)
+              .process(remarkText, (error, remarkAST) => {
+                if (error) {
+                  reject(error)
+                }
+                resolve(remarkAST)
+              })
+          })
+          const remarkAST = await remarkPromise
+          console.info("AST: ", remarkAST)
+
+          await context.sync()
+          await sleep(1000)
+        } catch (error) {
+          console.error(error)
         }
-        console.info("Original Text: ", originalText, hex(originalText))
-
-        console.debug("Prettifying markdown document...")
-        const prettyText = Prettier.format(originalText, {
-          parser: "markdown",
-          plugins: [PrettierMarkdown],
-          proseWrap: "never", // [always,never,preserve]
-        })
-        console.info("Pretty Text: ", prettyText, hex(prettyText))
-
-        console.debug("Replacing markdown document...")
-        remarkRange.insertText(
-          getDisplayText(prettyText),
-          Word.InsertLocation.replace
-        )
-        remarkRange.load()
-        await context.sync()
-
-        console.debug("Parsing markdown document...")
-        const remarkText = getCleanText(remarkRange.text)
-        const remarkPromise = new Promise((resolve, reject) => {
-          Unified()
-            .use(RemarkParse)
-            .use(RemarkWord, { range: remarkRange })
-            .use(RemarkStringify)
-            .process(remarkText, (error, remarkAST) => {
-              if (error) {
-                reject(error)
-              }
-              resolve(remarkAST)
-            })
-        })
-        const remarkAST = await remarkPromise
-        console.info("AST: ", remarkAST)
-
-        await context.sync()
-      } catch (error) {
-        console.error(error)
-      }
-    })
+      })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   render() {

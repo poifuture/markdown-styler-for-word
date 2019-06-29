@@ -4,19 +4,13 @@ const CopyWebpackPlugin = require("copy-webpack-plugin")
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const webpack = require("webpack")
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer")
 
 module.exports = async (env, options) => {
   const dev = options.mode === "development"
   const config = {
     devtool: "source-map",
     entry: {
-      vendor: [
-        "react",
-        "react-dom",
-        "core-js",
-        "office-ui-fabric-react",
-        "unified",
-      ],
       taskpane: ["react-hot-loader/patch", "./src/taskpane/index.tsx"],
       commands: "./src/commands/commands.ts",
     },
@@ -25,6 +19,13 @@ module.exports = async (env, options) => {
     },
     module: {
       rules: [
+        {
+          test: /is-plain-obj.*\.js$/,
+          use: {
+            loader: "babel-loader",
+            options: { presets: ["@babel/preset-env"] },
+          },
+        },
         {
           test: /\.tsx?$/,
           use: ["react-hot-loader/webpack", "ts-loader"],
@@ -46,6 +47,7 @@ module.exports = async (env, options) => {
       ],
     },
     plugins: [
+      new BundleAnalyzerPlugin(),
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin([
         {
@@ -84,7 +86,9 @@ module.exports = async (env, options) => {
           ? options.https
           : await devCerts.getHttpsServerOptions(),
       port: process.env.npm_package_config_dev_server_port || 3000,
+      stats: "verbose",
     },
+    stats: "verbose",
   }
 
   return config
