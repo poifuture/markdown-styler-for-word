@@ -5,15 +5,15 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>05c2e1c9-3e1d-406e-9a91-e9ac64854143</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Contoso</ProviderName>
+  <ProviderName>Poifuture</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Contoso Task Pane Add-in"/>
-  <Description DefaultValue="A template to get started."/>
+  <DisplayName DefaultValue="Markdown Style"/>
+  <Description DefaultValue="Style your markdown document."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-80.png"/>
-  <SupportUrl DefaultValue="https://www.contoso.com/help"/>
+  <SupportUrl DefaultValue="https://github.com/poifuture/word-add-in-markdown-style/issues"/>
   <AppDomains>
-    <AppDomain>contoso.com</AppDomain>
+    <AppDomain>poi.dev</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Document"/>
@@ -37,26 +37,60 @@
               <Group id="CommandsGroup">
                 <Label resid="CommandsGroup.Label" />
                 <Icon>
-                  <bt:Image size="16" resid="Icon.16x16" />
-                  <bt:Image size="32" resid="Icon.32x32" />
-                  <bt:Image size="80" resid="Icon.80x80" />
+                  <bt:Image size="16" resid="AppIcon.16x16" />
+                  <bt:Image size="32" resid="AppIcon.32x32" />
+                  <bt:Image size="80" resid="AppIcon.80x80" />
                 </Icon>
-                <Control xsi:type="Button" id="TaskpaneButton">
-                  <Label resid="TaskpaneButton.Label" />
+
+                <Control xsi:type="Button" id="RemarkSelectionButton">
+                  <Label resid="RemarkSelectionButton.Label" />
                   <Supertip>
-                    <Title resid="TaskpaneButton.Label" />
-                    <Description resid="TaskpaneButton.Tooltip" />
+                    <Title resid="RemarkSelectionButton.Label" />
+                    <Description resid="RemarkSelectionButton.Tooltip" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
+                    <bt:Image size="16" resid="SelectionIcon.16x16" />
+                    <bt:Image size="32" resid="SelectionIcon.32x32" />
+                    <bt:Image size="80" resid="SelectionIcon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>onClickRemarkSelection</FunctionName>
+                  </Action>
+                </Control>
+
+                <Control xsi:type="Button" id="RemarkDocumentButton">
+                  <Label resid="RemarkDocumentButton.Label" />
+                  <Supertip>
+                    <Title resid="RemarkDocumentButton.Label" />
+                    <Description resid="RemarkDocumentButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="DocumentIcon.16x16" />
+                    <bt:Image size="32" resid="DocumentIcon.32x32" />
+                    <bt:Image size="80" resid="DocumentIcon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>onClickRemarkDocument</FunctionName>
+                  </Action>
+                </Control>
+
+                <Control xsi:type="Button" id="OptionButton">
+                  <Label resid="OptionButton.Label" />
+                  <Supertip>
+                    <Title resid="OptionButton.Label" />
+                    <Description resid="OptionButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="OptionIcon.16x16" />
+                    <bt:Image size="32" resid="OptionIcon.32x32" />
+                    <bt:Image size="80" resid="OptionIcon.80x80" />
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <TaskpaneId>OptionMenu</TaskpaneId>
                     <SourceLocation resid="Taskpane.Url" />
                   </Action>
                 </Control>
+
               </Group>
             </OfficeTab>
           </ExtensionPoint>
@@ -65,23 +99,36 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="AppIcon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
+        <bt:Image id="AppIcon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+        <bt:Image id="AppIcon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="SelectionIcon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
+        <bt:Image id="SelectionIcon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+        <bt:Image id="SelectionIcon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="DocumentIcon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
+        <bt:Image id="DocumentIcon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+        <bt:Image id="DocumentIcon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="OptionIcon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
+        <bt:Image id="OptionIcon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
+        <bt:Image id="OptionIcon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/poifuture/word-add-in-markdown-style" />
         <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html" />
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GetStarted.Title" DefaultValue="Get started with your sample add-in!" />
-        <bt:String id="CommandsGroup.Label" DefaultValue="Commands Group" />
-        <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane" />
+        <bt:String id="GetStarted.Title" DefaultValue="Welcome to use Markdown Style!" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="Markdown Style" />
+        <bt:String id="RemarkSelectionButton.Label" DefaultValue="Remark Selection" />
+        <bt:String id="RemarkDocumentButton.Label" DefaultValue="Remark Document" />
+        <bt:String id="OptionButton.Label" DefaultValue="Options" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Your sample add-in loaded succesfully. Go to the HOME tab and click the 'Show Taskpane' button to get started." />
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Click to Show a Taskpane" />
+        <bt:String id="GetStarted.Description" DefaultValue="Go to the HOME tab and click the 'Options' button to get started." />
+        <bt:String id="RemarkSelectionButton.Tooltip" DefaultValue="Remark the selection" />
+        <bt:String id="RemarkDocumentButton.Tooltip" DefaultValue="Remark the whole document" />
+        <bt:String id="OptionButton.Tooltip" DefaultValue="Click to show the options menu" />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

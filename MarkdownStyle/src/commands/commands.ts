@@ -43,3 +43,13 @@ const g = getGlobal() as any
 
 // the add-in command functions need to be available in global scope
 g.action = action
+
+g.onClickRemarkSelection = (event: Office.AddinCommands.Event) => {
+  console.debug("[Ribbon] Remarking selection...", event)
+  event.completed()
+}
+
+g.onClickRemarkDocument = (event: Office.AddinCommands.Event) => {
+  console.debug("[Ribbon] Remarking document...", event)
+  event.completed()
+}
