@@ -2,6 +2,8 @@ import "office-ui-fabric-react/dist/css/fabric.min.css"
 import App from "./components/App"
 import { AppContainer } from "react-hot-loader"
 import { initializeIcons } from "office-ui-fabric-react/lib/Icons"
+import { Customizer } from "office-ui-fabric-react"
+import { FluentCustomizations } from "@uifabric/fluent-theme"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
 
@@ -14,7 +16,9 @@ const title = "Contoso Task Pane Add-in"
 const render = Component => {
   ReactDOM.render(
     <AppContainer>
-      <Component title={title} isOfficeInitialized={isOfficeInitialized} />
+      <Customizer {...FluentCustomizations}>
+        <Component title={title} isOfficeInitialized={isOfficeInitialized} />
+      </Customizer>
     </AppContainer>,
     document.getElementById("container")
   )
