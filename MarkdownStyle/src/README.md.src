@@ -93,7 +93,7 @@ Sometimes the inline style suddenly apply to the entire paragraph, this is a [bu
 
 ## Whitespcaces
 
-As every web UI developer knows, a normal space (0x20) is different from a display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will replace all nbsp to space before processing, and put nbsp back in document. It works fine for most cases, however, in rare scenarios, you will get nbsp in your clipboard. So be careful.
+As every web UI developer knows, a normal space (0x20) is different from a display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will replace all nbsp to space before processing, and put nbsp back in document. It works fine for most cases, however, in rare scenarios, you will get nbsp in your clipboard. Be careful.
 
 ## MS Word doesn't have a vim plugin
 

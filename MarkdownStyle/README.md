@@ -9,14 +9,16 @@ title: Markdown Style for MS Word
 
 ---
 
+<!-- CONGRATULATIONS -->
+
 Make MS Word a markdown friendly collaborative editor.
 
 Welcome to markdown world! This MS Word add-in aims to apply MS Word styles to
 your document without changing your markdown content. You can easily view your
-document with a better style while collaborating with others on the document. We
-are using it for writing our meeting notes.
+document with a better style while collaborating with others on the document.
+Our team is actively using it for writing our meeting notes.
 
-<!-- INSTALL START -->
+<!-- INSTALL BEGIN -->
 
 # Install
 
@@ -30,7 +32,7 @@ Style" -> Add
 1. Insert Readme and read the warning
 1. (Optional) Setup the document theme
 1. Click "Remark Document"
-1. (Optional) Customize the builtin styles (Normal, Heading1, etc.) of the
+1. (Optional) Customize the built-in styles (Normal, Heading1, etc.) of the
    document theme in MS Word
 
 # Warning
@@ -50,13 +52,13 @@ work.
 # What it does
 
 1. Clear all pre-existing styles
-1. Format your document with [Prettifier](https://github.com/prettier/prettier)
-   1. Prettifier will format your markdown
-   1. [Not Implemented] Prettifier will format your front matter
-   1. [Not Implemented] Prettifier will format your code block
+1. Format your document with [Prettier](https://github.com/prettier/prettier)
+   1. Prettier will format your markdown
+   1. [Not Implemented] Prettier will format your front matter
+   1. [Not Implemented] Prettier will format your code block
 1. Parse your markdown styles with [Remark](https://github.com/remarkjs/remark)
 1. [Not Implemented] Apply syntax highlights to your code block with
-   [Highlightjs](https://github.com/highlightjs/highlight.js/)
+   [Highlight.js](https://github.com/highlightjs/highlight.js/)
 1. [Not Implemented] Watch live changes and apply style after typing Enter
 
 # What setup does
@@ -69,9 +71,9 @@ work.
 
 ## Long Paragraph
 
-A long paragraph will be rewrapped at column 80 if the the prettier.proseWrap is
-configured as always. If there is no empty line, the two lines will be merged in
-markdown. So please always remember to insert an empty line between your
+A long paragraph will be rewrapped at column 80 if the `prettier.proseWrap` is
+configured as `always`. If there is no empty line, the two lines will be merged
+in markdown. So please always remember to insert an empty line between your
 paragraphs.
 
 ## Headings
@@ -96,19 +98,19 @@ const a = 1
 
 # Known Issues
 
+## Inline Style
+
+Sometimes the inline style suddenly apply to the entire paragraph, this is a
+[bug](https://github.com/OfficeDev/office-js/issues/586) in Word Online. The
+workaround is not to remark the end of file.
+
 ## Whitespcaces
 
 As every web UI developer knows, a normal space (0x20) is different from a
 display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will
 replace all nbsp to space before processing, and put nbsp back in document. It
 works fine for most cases, however, in rare scenarios, you will get nbsp in your
-clipboard. So becareful.
-
-## Inline Style
-
-Sometimes the inline style suddenly apply to the entire paragraph, this is a
-[bug](https://github.com/OfficeDev/office-js/issues/586) in Word Online. The
-workaround is not to remark the end of file.
+clipboard. So be careful.
 
 ## MS Word doesn't have a vim plugin
 
