@@ -1,3 +1,4 @@
+import Styler from "../core/styler"
 /*
  * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
  * See LICENSE in the project root for license information.
@@ -46,10 +47,28 @@ g.action = action
 
 g.onClickRemarkSelection = (event: Office.AddinCommands.Event) => {
   console.debug("[Ribbon] Remarking selection...", event)
-  event.completed()
+  Word.run(async context => {
+    await Styler.RemarkSelection(context)
+    await context.sync()
+  })
+    .catch(error => {
+      console.error(error)
+    })
+    .finally(() => {
+      event.completed()
+    })
 }
 
 g.onClickRemarkDocument = (event: Office.AddinCommands.Event) => {
   console.debug("[Ribbon] Remarking document...", event)
-  event.completed()
+  Word.run(async context => {
+    await Styler.RemarkDocument(context)
+    await context.sync()
+  })
+    .catch(error => {
+      console.error(error)
+    })
+    .finally(() => {
+      event.completed()
+    })
 }
