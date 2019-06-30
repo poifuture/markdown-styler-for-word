@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/unist": "^2.0.3",
     "@types/vfile": "^3.0.2",
+    "@uifabric/fluent-theme": "^7.0.2",
     "core-js": "^2.6.1",
     "es6-promise": "^4.2.6",
     "office-ui-fabric-react": "^6.139.0",
