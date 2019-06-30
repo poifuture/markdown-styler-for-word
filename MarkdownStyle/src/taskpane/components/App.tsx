@@ -3,6 +3,7 @@ import { Button, ButtonType } from "office-ui-fabric-react"
 import HeroList, { HeroListItem } from "./HeroList"
 import Progress from "./Progress"
 import Styler from "../../core/styler"
+import ReadmeMarkdown from "raw-loader!../../README.md.src"
 
 export interface AppProps {
   title: string
@@ -13,101 +14,11 @@ export interface AppState {
   listItems: HeroListItem[]
 }
 
-const ReadmeMarkdown = `---
-title: Markdown Style for MS Word
----
-
-Make MS Word a markdown friendly collaborative editor.
-
-This word add-in aims to apply MS Word styles to your document without changing your markdown content. You can easily view your document with a better style while collaborating with others on the document. We are using it for writing our meeting notes.
-
-# Usage
-
-1. Insert Readme and read the warning
-1. (Optional) Setup the document theme
-1. Click "Remark Document"
-1. (Optional) Customize the builtin styles (Normal, Heading1, etc.) of the document theme in MS Word
-
-# Warning
-
-We aim to apply only styles to your document without changing your content. However, your work might be lost if there are bugs in the add-in. If it happens, please remember to use the document history feature of MS Word to retrieve your work.
-
-# Why MS Word (Online)
-
-* Chinese friends cannot access Google Doc easily
-* Good integration with MS products family
-* Free! (For personal use) (From developer: We paid Office 365)
-* ~~Rich functionality~~ Buggy
-
-# What it does
-
-1. Clear all pre-existing styles
-1. Format your document with [Prettifier](https://github.com/prettier/prettier)
-   1. Prettifier will format your markdown
-   1. [Not Implemented] Prettifier will format your front matter
-   1. [Not Implemented] Prettifier will format your code block
-1. Parse your markdown styles with [Remark](https://github.com/remarkjs/remark)
-1. [Not Implemented] Apply syntax highlights to your code block with [Highlightjs](https://github.com/highlightjs/highlight.js/)
-
-# What setup does
-
-* [Not Implemented] Change the theme font of your document
-  - Face: Courier New (A monospace font)
-  - Size: 10 (To make each line contains >=80 chars)
-
-# Examples
-
-## Long Paragraph
-
-A long paragraph will be rewrapped at column 80 if the the prettier.proseWrap is configured as always.
-If there is no empty line, the two lines will be merged in markdown.
-So please always remember to insert an empty line between your paragraphs.
-
-## Headings
-
-## A **Strong** Title
-
-There is a **strong** word and **some phrases** in a sentence.
-
-## List
-
-## Table
-
-Column 1 | Column 2 has a long head | c3 | c4
---- | --- | --- | ---
-c1 | c2 | Column 3 is long | c4
-
-## Code
-
-\`\`\`javascript
-const a=1
-\`\`\`
-
-# Known Issues
-
-## Whitespcaces
-
-As every web UI developer knows, a normal space (0x20) is different from a display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will replace all nbsp to space before processing, and put nbsp back in document. It works fine for most cases, however, in rare scenarios, you will get nbsp in your clipboard. So becareful.
-
-## Inline Style
-
-Sometimes the inline style suddenly apply to the entire paragraph, this is a [bug](https://github.com/OfficeDev/office-js/issues/586) in Word Online. The workaround is not to remark the end of file.
-
-## MS Word doesn't have a vim plugin
-
-So sad...
-
-# FAQ
-
-> When will "not implemented" become "implemented"?
-
-When we get 100 [github stars](https://github.com/poifuture/word-add-in-markdown-style)
-
-`
-
 const devMarkdown = `
 It's a **strong** word
 `
+const CongratsParagraph = `Congratulations! Your team's life become much easier!
+Now, click on "Remark Document" to continue reading.`
 
 export default class App extends React.Component<AppProps, AppState> {
   constructor(props, context) {
@@ -149,13 +60,25 @@ export default class App extends React.Component<AppProps, AppState> {
 
   insertReadme = async () => {
     console.debug("Inserting readme...")
-    return Word.run(async context => {
-      context.document.body.insertText(
-        ReadmeMarkdown,
-        Word.InsertLocation.start
-      )
-      await context.sync()
-    })
+    let FilteredReadme = ReadmeMarkdown
+
+    FilteredReadme = FilteredReadme.replace(
+      /<!-- CONGRATULATIONS -->/gms,
+      CongratsParagraph
+    )
+    FilteredReadme = FilteredReadme.replace(/INSTALL BEGIN.*INSTALL END/gms, "")
+    FilteredReadme = FilteredReadme.replace(/<!--.*-->/g, "")
+    try {
+      return Word.run(async context => {
+        context.document.body.insertText(
+          FilteredReadme,
+          Word.InsertLocation.start
+        )
+        await context.sync()
+      })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   setupTheme = async () => {
