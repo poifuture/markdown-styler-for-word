@@ -47,11 +47,6 @@ export default class App extends React.Component<AppProps, AppState> {
   insertReadme = async () => {
     console.debug("Inserting readme...")
     let FilteredReadme = ReadmeMarkdown
-
-    // FilteredReadme = FilteredReadme.replace(
-    //   /<!-- CONGRATULATIONS PLACEHOLDER -->/gm,
-    //   CongratsParagraph
-    // )
     FilteredReadme = FilteredReadme.replace(
       /INSTALL SECTION BEGIN(.|\n)*INSTALL SECTION END/gm,
       ""
@@ -59,7 +54,6 @@ export default class App extends React.Component<AppProps, AppState> {
     FilteredReadme = FilteredReadme.replace(/<!--.*-->\n/g, "")
     try {
       return Word.run(async context => {
-        console.debug("start")
         context.document.body.insertText(
           FilteredReadme,
           Word.InsertLocation.start

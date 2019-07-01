@@ -5,4 +5,4 @@ if [ "$1" != "node" ]; then
   echo "Please run 'npm run build:readme'"
 fi
 
-echo '<!-- This file is auto generated, change src/README.md instead. -->' | cat - ./src/README.md | grep -v "prettier-ignore" | prettier --parser markdown > ./README.md
+cat ./src/README.md | sed "s/^.*prettier-ignore.*$/<!-- This file is auto generated, change src\/README.md instead. -->/g" | prettier --parser markdown > ./README.md

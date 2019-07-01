@@ -1,10 +1,9 @@
-## <!-- This file is auto generated, change src/README.md instead. -->
-
-title: Markdown Style for MS Word description: Make MS Word a markdown friendly
-collaborative editor.
-
+---
+title: Markdown Style for MS Word
+description: Make MS Word a markdown friendly collaborative editor.
 ---
 
+<!-- This file is auto generated, change src/README.md instead. -->
 <!-- markdownlint-disable -->
 <!-- DO NOT FORMAT. This file is used to teach people how to use prettier in MS Word, so we keep exactly whatever it looks. -->
 
@@ -125,3 +124,5 @@ When we get 100
 # Contributing?
 
 Warm Welcome!
+
+<!-- This file is auto generated, change src/README.md instead. -->
