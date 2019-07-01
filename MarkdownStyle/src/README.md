@@ -1,26 +1,24 @@
-<!-- prettier-ignore -->
+---
+title: Markdown Style for MS Word
+description: Make MS Word a markdown friendly collaborative editor.
+---
+
+<!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <!-- DO NOT FORMAT. This file is used to teach people how to use prettier in MS Word, so we keep exactly whatever it looks. -->
 
----
+Welcome to markdown world!
+This MS Word add-in aims to apply MS Word styles to your document without changing your markdown content.
+You can easily view your document with a better style while collaborating with others on the document.
+Our team is actively using it for writing our meeting notes.
 
-title: Markdown Style for MS Word
-
----
-
-<!-- CONGRATULATIONS -->
-
-Make MS Word a markdown friendly collaborative editor.
-
-Welcome to markdown world! This MS Word add-in aims to apply MS Word styles to your document without changing your markdown content. You can easily view your document with a better style while collaborating with others on the document. Our team is actively using it for writing our meeting notes.
-
-<!-- INSTALL BEGIN -->
+<!-- INSTALL SECTION BEGIN  -->
 
 # Install
 
 Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Style" -> Add
 
-<!-- INSTALL END -->
+<!-- INSTALL SECTION END -->
 
 # Usage
 
@@ -112,3 +110,5 @@ When we get 100 [github stars](https://github.com/poifuture/word-add-in-markdown
 # Contributing?
 
 Warm Welcome!
+
+<!-- prettier-ignore-end -->
