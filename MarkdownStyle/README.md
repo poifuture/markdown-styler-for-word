@@ -1,31 +1,26 @@
-<!-- This file is auto generated, change src/README.md.src instead. -->
-<!-- prettier-ignore -->
+## <!-- This file is auto generated, change src/README.md instead. -->
+
+title: Markdown Style for MS Word description: Make MS Word a markdown friendly
+collaborative editor.
+
+---
+
 <!-- markdownlint-disable -->
 <!-- DO NOT FORMAT. This file is used to teach people how to use prettier in MS Word, so we keep exactly whatever it looks. -->
-
----
-
-title: Markdown Style for MS Word
-
----
-
-<!-- CONGRATULATIONS -->
-
-Make MS Word a markdown friendly collaborative editor.
 
 Welcome to markdown world! This MS Word add-in aims to apply MS Word styles to
 your document without changing your markdown content. You can easily view your
 document with a better style while collaborating with others on the document.
 Our team is actively using it for writing our meeting notes.
 
-<!-- INSTALL BEGIN -->
+<!-- INSTALL SECTION BEGIN  -->
 
 # Install
 
 Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown
 Style" -> Add
 
-<!-- INSTALL END -->
+<!-- INSTALL SECTION END -->
 
 # Usage
 
@@ -110,7 +105,7 @@ As every web UI developer knows, a normal space (0x20) is different from a
 display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will
 replace all nbsp to space before processing, and put nbsp back in document. It
 works fine for most cases, however, in rare scenarios, you will get nbsp in your
-clipboard. So be careful.
+clipboard. Be careful.
 
 ## MS Word doesn't have a vim plugin
 
@@ -122,6 +117,10 @@ So sad...
 
 When we get 100
 [github stars](https://github.com/poifuture/word-add-in-markdown-style)
+
+> To learn more about Markdown, see
+
+[Daring Fireball](http://daringfireball.net/).
 
 # Contributing?
 

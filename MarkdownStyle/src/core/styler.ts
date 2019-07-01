@@ -1,7 +1,7 @@
 import Unified, * as UnifiedModule from "unified"
 import * as Unist from "unist"
+import RemarkFrontmatter from "remark-frontmatter"
 import RemarkParse from "remark-parse"
-import RemarkStringify from "remark-stringify"
 import Prettier from "prettier/standalone"
 import PrettierMarkdown from "prettier/parser-markdown"
 import { hex, sleep } from "./utils"
@@ -14,28 +14,54 @@ const getCleanText = str =>
 const getDisplayText = str =>
   str.replace(/[ ]{2,}/g, (match: String) => "\xA0".repeat(match.length)) // &nbsp;
 
-const getNodeParagraph = async (
+const getPointParagraph = async (
   range: Word.Range,
-  node: Unist.Node
+  point: Unist.Point
 ): Promise<Word.Paragraph> => {
+  console.debug("getPointParagraph", point)
   range.paragraphs.load()
   await range.paragraphs.context.sync()
-  return range.paragraphs.items[node.position.start.line - 1]
+  console.debug("target", range.paragraphs.items[point.line - 1])
+  return range.paragraphs.items[point.line - 1]
+}
+
+const getPointCursur = async (
+  range: Word.Range,
+  point: Unist.Point,
+  options: { isEnd: boolean }
+): Promise<Word.Range> => {
+  console.debug("getPointCursur", point)
+  const pointParagraph = await getPointParagraph(range, point)
+  pointParagraph.load()
+  await pointParagraph.context.sync()
+  const charRanges = pointParagraph.getTextRanges([""])
+  charRanges.load()
+  await charRanges.context.sync()
+  console.debug("cursur", charRanges)
+  const pointCursor = options.isEnd
+    ? charRanges.items[point.column - 2]
+    : charRanges.items[point.column - 1]
+  return pointCursor
 }
 
 const getNodeRange = async (
   range: Word.Range,
   node: Unist.Node
 ): Promise<Word.Range> => {
-  const nodeParagraph = await getNodeParagraph(range, node)
-  nodeParagraph.load()
-  await nodeParagraph.context.sync()
-  const charRanges = nodeParagraph.getTextRanges([""])
-  charRanges.load()
-  await charRanges.context.sync()
-  const startCursor = charRanges.items[node.position.start.column - 1]
-  const endCursor = charRanges.items[node.position.end.column - 2]
-  const nodeRange = startCursor.expandTo(endCursor)
+  const startParagraph = await getPointParagraph(range, node.position.start)
+  startParagraph.load()
+  await startParagraph.context.sync()
+  const startCharRanges = startParagraph.getTextRanges([""])
+  startCharRanges.load()
+  await startCharRanges.context.sync()
+  const startCursor = startCharRanges.items[node.position.start.column - 1]
+  const endCursor =
+    node.position.start.line == node.position.end.line
+      ? startCharRanges.items[node.position.end.column - 2]
+      : await getPointCursur(range, node.position.end, { isEnd: true })
+  const nodeRange = startCursor.expandTo(
+    endCursor.getRange(Word.RangeLocation.after)
+  )
   return nodeRange
 }
 
@@ -82,7 +108,10 @@ const UnistDFS = async (node: Unist.Node, visitor: VisitorFunction) => {
   }
 }
 
-const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
+const RemarkWord: UnifiedModule.Attacher = function(options: {
+  // Cant use arrow function here because the context of 'this' will be different
+  range: Word.Range
+}) {
   const range = options.range
   const RemarkWordTransformer: UnifiedModule.Transformer = async (
     tree,
@@ -94,6 +123,20 @@ const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
     await UnistDFS(tree, async (node: Unist.Node) => {
       console.debug("Node: ", node)
       switch (node.type) {
+        case "yaml": {
+          const nodeRange = await getNodeRange(range, node)
+          nodeRange.font.color = "darkblue"
+          nodeRange.load()
+          await nodeRange.context.sync()
+          const titleParagraph = nodeRange
+            .search("title:")
+            .getFirst()
+            .paragraphs.getFirst()
+            .load()
+          await titleParagraph.context.sync()
+          titleParagraph.styleBuiltIn = Word.Style.title
+          break
+        }
         case "heading": {
           const nodeHeading: any = node
           const WordHeadingStyles = [
@@ -108,24 +151,26 @@ const RemarkWord: UnifiedModule.Attacher = (options: { range: Word.Range }) => {
             Word.Style.heading8,
             Word.Style.heading9,
           ]
-          const nodeParagraph = await getNodeParagraph(range, node)
+          const nodeParagraph = await getPointParagraph(
+            range,
+            node.position.start
+          )
           nodeParagraph.styleBuiltIn = WordHeadingStyles[nodeHeading.depth]
           break
         }
         case "strong": {
-          try {
-            const nodeRange = await getNodeRange(range, node)
-            nodeRange.font.bold = true
-            nodeRange.font.color = "darkblue"
-            await nodeRange.parentBody.context.sync()
-          } catch (error) {
-            console.error(error)
-          }
+          const nodeRange = await getNodeRange(range, node)
+          nodeRange.styleBuiltIn = Word.Style.strong
+          nodeRange.font.color = "darkblue"
           break
         }
       }
     })
     return tree
+  }
+  this.Compiler = tree => {
+    console.debug("Compiler Tree:", tree)
+    return ""
   }
   return RemarkWordTransformer
 }
@@ -174,20 +219,20 @@ const RemarkRange = async (range: Word.Range) => {
   const remarkPromise = new Promise((resolve, reject) => {
     Unified()
       .use(RemarkParse)
+      .use(RemarkFrontmatter, ["yaml", "toml"])
       .use(RemarkWord, { range: remarkRange })
-      .use(RemarkStringify)
-      .process(remarkText, (error, remarkAST) => {
+      .process(remarkText, (error, _) => {
         if (error) {
           reject(error)
         }
-        resolve(remarkAST)
+        resolve("")
       })
   })
-  const remarkAST = await remarkPromise
-  console.info("AST: ", remarkAST)
+  await remarkPromise
+  console.info("Remark done.")
 
   await context.sync()
-  await sleep(1000)
+  await sleep(5000)
 }
 
 export const RemarkSelection = async (context: Word.RequestContext) => {

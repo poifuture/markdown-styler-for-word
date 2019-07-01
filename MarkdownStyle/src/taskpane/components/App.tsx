@@ -3,7 +3,7 @@ import { Button, ButtonType, DefaultButton } from "office-ui-fabric-react"
 import HeroList, { HeroListItem } from "./HeroList"
 import Progress from "./Progress"
 import Styler from "../../core/styler"
-import ReadmeMarkdown from "raw-loader!../../README.md.src"
+import ReadmeMarkdown from "raw-loader!../../README.md"
 
 export interface AppProps {
   title: string
@@ -17,8 +17,7 @@ export interface AppState {
 const devMarkdown = `
 It's a **strong** word
 `
-const CongratsParagraph = `Congratulations! Your team's life become much easier!
-Now, click on "Remark Document" to continue reading.`
+const CongratsText = `<!-- Congratulations! Your team's life becomes much easier! Now, click on "Remark Document" to continue reading. -->`
 
 export default class App extends React.Component<AppProps, AppState> {
   constructor(props, context) {
@@ -49,18 +48,31 @@ export default class App extends React.Component<AppProps, AppState> {
     console.debug("Inserting readme...")
     let FilteredReadme = ReadmeMarkdown
 
+    // FilteredReadme = FilteredReadme.replace(
+    //   /<!-- CONGRATULATIONS PLACEHOLDER -->/gm,
+    //   CongratsParagraph
+    // )
     FilteredReadme = FilteredReadme.replace(
-      /<!-- CONGRATULATIONS -->/gms,
-      CongratsParagraph
+      /INSTALL SECTION BEGIN(.|\n)*INSTALL SECTION END/gm,
+      ""
     )
-    FilteredReadme = FilteredReadme.replace(/INSTALL BEGIN.*INSTALL END/gms, "")
-    FilteredReadme = FilteredReadme.replace(/<!--.*-->/g, "")
+    FilteredReadme = FilteredReadme.replace(/<!--.*-->\n/g, "")
     try {
       return Word.run(async context => {
+        console.debug("start")
         context.document.body.insertText(
           FilteredReadme,
           Word.InsertLocation.start
         )
+        await context.sync()
+        context.document.body.paragraphs.load()
+        await context.sync()
+        const CongratsParagraph = context.document.body.paragraphs.items[3].insertParagraph(
+          CongratsText,
+          Word.InsertLocation.after
+        )
+        CongratsParagraph.font.color = "red"
+        CongratsParagraph.font.bold = true
         await context.sync()
       })
     } catch (error) {
