@@ -1,5 +1,5 @@
 ---
-title: Markdown Style for MS Word
+title: Markdown Styler for MS Word
 author: poifuture
 ---
 
@@ -7,7 +7,7 @@ author: poifuture
 <!-- markdownlint-disable -->
 <!-- DO NOT FORMAT. This file is used to teach people how to use prettier in MS Word, so we keep exactly whatever it looks. -->
 
-# Markdown Style for MS Word
+# Markdown Styler for MS Word
 
 > Make MS Word a markdown friendly collaborative editor.
 

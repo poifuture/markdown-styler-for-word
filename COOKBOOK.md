@@ -1,4 +1,4 @@
-# MS Word Add-in Markdown Style
+# Markdown Styler for MS Word
 
 This project is created from
 [Office-Addin-TaskPane-React](https://github.com/OfficeDev/Office-Addin-TaskPane-React)

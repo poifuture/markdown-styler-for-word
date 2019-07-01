@@ -7,7 +7,7 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Poifuture</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Markdown Style"/>
+  <DisplayName DefaultValue="Markdown Styler"/>
   <Description DefaultValue="Style your markdown document."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-80.png"/>
@@ -118,8 +118,8 @@
         <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GetStarted.Title" DefaultValue="Welcome to use Markdown Style!" />
-        <bt:String id="CommandsGroup.Label" DefaultValue="Markdown Style" />
+        <bt:String id="GetStarted.Title" DefaultValue="Welcome to use Markdown Styler!" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="Markdown Styler" />
         <bt:String id="RemarkSelectionButton.Label" DefaultValue="Remark Selection" />
         <bt:String id="RemarkDocumentButton.Label" DefaultValue="Remark Document" />
         <bt:String id="OptionButton.Label" DefaultValue="Options" />

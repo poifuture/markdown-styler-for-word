@@ -1,5 +1,5 @@
 ---
-title: Markdown Style for MS Word
+title: Markdown Styler for MS Word
 author: poifuture
 ---
 
@@ -7,7 +7,7 @@ author: poifuture
 <!-- markdownlint-disable -->
 <!-- DO NOT FORMAT. This file is used to teach people how to use prettier in MS Word, so we keep exactly whatever it looks. -->
 
-# Markdown Style for MS Word
+# Markdown Styler for MS Word
 
 > Make MS Word a markdown friendly collaborative editor.
 
@@ -20,7 +20,7 @@ Our team is actively using it for writing our meeting notes.
 
 ## Install
 
-Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Style" -> Add
+Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Styler" -> Add
 
 <!-- INSTALL SECTION END -->
 
@@ -37,9 +37,10 @@ We aim to apply only styles to your document without changing your content. Howe
 
 ## Why MS Word (Online)
 
-* Chinese friends cannot access Google Doc easily
-* Good integration with MS products family
-* Free! (For personal use) (From developer: We paid Office 365)
+* Real time collaborative editing
+* Good integration with MS products family and MS accounts
+* China friendly
+* Free! (For personal use) (From developer: We paid Office 365!)
 * ~~Rich functionality~~ Buggy
 
 ## What it does
@@ -107,9 +108,17 @@ So sad...
 
 When we get 100 [github stars](https://github.com/poifuture/word-add-in-markdown-style)
 
-> To learn more about Markdown, see
+> When will Google doc come true?
 
-[Daring Fireball](http://daringfireball.net/).
+If we get can an average rating over 4/5.
+
+> Alternatives?
+
+Try [SlackEdit](https://stackedit.io/) if you prefer independent app!
+
+## Appreciation
+
+This tool can't be real without the awesome work of [Remark](https://github.com/remarkjs/remark), [Prettier](https://github.com/prettier/prettier) and [MSOffice](https://github.com/OfficeDev/office-js)
 
 ## Contributing?
 
