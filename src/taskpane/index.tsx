@@ -11,7 +11,7 @@ initializeIcons()
 
 let isOfficeInitialized = false
 
-const title = "Markdown Style"
+const title = "Markdown Styler"
 
 const render = Component => {
   ReactDOM.render(
