@@ -1,3 +1,5 @@
+import "core-js/stable" // polyfill
+import "regenerator-runtime/runtime" // polyfill
 import Styler from "../core/styler"
 
 Office.onReady(() => {})

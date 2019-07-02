@@ -21,7 +21,7 @@ Our team is actively using it for writing our meeting notes.
 ## Install
 
 Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown
-Style" -> Add
+Styler" -> Add
 
 <!-- INSTALL SECTION END -->
 
@@ -42,9 +42,10 @@ work.
 
 ## Why MS Word (Online)
 
-- Chinese friends cannot access Google Doc easily
-- Good integration with MS products family
-- Free! (For personal use) (From developer: We paid Office 365)
+- Real time collaborative editing
+- Good integration with MS products family and MS accounts
+- China friendly
+- Free! (For personal use) (From developer: We paid Office 365!)
 - ~~Rich functionality~~ Buggy
 
 ## What it does
@@ -98,17 +99,21 @@ const a = 1
 
 ### Inline Style
 
-Sometimes the inline style suddenly apply to the entire paragraph, this is a
-[bug](https://github.com/OfficeDev/office-js/issues/586) in Word Online. The
-workaround is not to remark the end of file.
+The inline style doesn't work at all in both Word Online and Word Desktop
+because of different Microsoft issues. In Word Online (Chrome), the inline style
+will sometimes apply to the entire paragraph after the targeted range. See
+[bug](https://github.com/OfficeDev/office-js/issues/586). In on-premise Word
+(Word Desktop), the javascript engine is IE, which lacks the functionality of
+choosing the exact range.
 
 ### Whitespcaces
 
-As every web UI developer knows, a normal space (0x20) is different from a
-display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will
-replace all nbsp to space before processing, and put nbsp back in document. It
-works fine for most cases, however, in rare scenarios, you will get nbsp in your
-clipboard. Be careful.
+As every web UI developer knows, a normal space (0x20, ascii 32) is different
+from a display space (0xA0, ascii 160, also known as nbsp, non-breaking space,
+hard space, etc.). As a workaround, this Add-in will replace all nbsp to space
+before processing, and put nbsp back in document. It works fine for most cases.
+However, in rare scenarios, you may accidentally get nbsp in your document.
+So... be careful.
 
 ### MS Word doesn't have a vim plugin
 
@@ -121,9 +126,20 @@ So sad...
 When we get 100
 [github stars](https://github.com/poifuture/word-add-in-markdown-style)
 
-> To learn more about Markdown, see
+> When will Google doc come true?
 
-[Daring Fireball](http://daringfireball.net/).
+If we get can an average rating over 4/5.
+
+> Alternatives?
+
+Try [SlackEdit](https://stackedit.io/) if you prefer independent app!
+
+## Appreciation
+
+This tool can't be real without the awesome work of
+[Remark](https://github.com/remarkjs/remark),
+[Prettier](https://github.com/prettier/prettier) and
+[MSOffice](https://github.com/OfficeDev/office-js)
 
 ## Contributing?
 

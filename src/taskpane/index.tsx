@@ -1,3 +1,5 @@
+import "core-js/stable" // polyfill
+import "regenerator-runtime/runtime" // polyfill
 import "office-ui-fabric-react/dist/css/fabric.min.css"
 import App from "./components/App"
 import { AppContainer } from "react-hot-loader"
