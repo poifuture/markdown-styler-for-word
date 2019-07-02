@@ -1,43 +1,55 @@
 import "core-js/stable" // polyfill
 import "regenerator-runtime/runtime" // polyfill
-import "office-ui-fabric-react/dist/css/fabric.min.css"
-import App from "./components/App"
 import { AppContainer } from "react-hot-loader"
-import { initializeIcons } from "office-ui-fabric-react/lib/Icons"
-import { Customizer } from "office-ui-fabric-react"
-import { FluentCustomizations } from "@uifabric/fluent-theme"
 import * as React from "react"
 import * as ReactDOM from "react-dom"
-
-initializeIcons()
+// import { Bootstrap } from "./bootstrap"
+const BootstrapModulePromise = import(
+  /* webpackChunkName: "bootstrap" */ "./bootstrap"
+)
+let Bootstrap: typeof import("./bootstrap").Bootstrap = null
 
 let isOfficeInitialized = false
 
 const title = "Markdown Styler"
 
-const render = Component => {
+const render = (App?) => {
   ReactDOM.render(
     <AppContainer>
-      <Customizer {...FluentCustomizations}>
-        <Component title={title} isOfficeInitialized={isOfficeInitialized} />
-      </Customizer>
+      {Bootstrap ? (
+        <Bootstrap
+          app={App}
+          title={title}
+          isOfficeInitialized={isOfficeInitialized}
+        />
+      ) : (
+        <p>Splash Screen...</p>
+      )}
     </AppContainer>,
     document.getElementById("container")
   )
 }
 
-/* Render application after Office initializes */
+/* Render application after modules initialize */
 Office.initialize = () => {
   isOfficeInitialized = true
-  render(App)
+  console.info("Office initialized.")
+  render()
 }
+BootstrapModulePromise.then(module => {
+  console.info("App initialized")
+  Bootstrap = module.Bootstrap
+  render()
+})
 
 /* Initial render showing a progress bar */
-render(App)
+render()
 
 if ((module as any).hot) {
   ;(module as any).hot.accept("./components/App", () => {
-    const NextApp = require("./components/App").default
-    render(NextApp)
+    import("./components/App").then(module => {
+      const NextApp = module.default
+      render(NextApp)
+    })
   })
 }
