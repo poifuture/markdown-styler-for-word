@@ -46,8 +46,13 @@ module.exports = async (env, options) => {
         },
       ],
     },
+    optimization: {
+      splitChunks: {
+        chunks: "all",
+      },
+    },
     plugins: [
-      new BundleAnalyzerPlugin(),
+      new BundleAnalyzerPlugin(), // Note: this will cause "yarn build" hanging without exit.
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin([
         {
@@ -59,7 +64,7 @@ module.exports = async (env, options) => {
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
-        chunks: ["taskpane", "vendor", "polyfills"],
+        chunks: ["taskpane"],
       }),
       new HtmlWebpackPlugin({
         filename: "commands.html",
@@ -86,10 +91,7 @@ module.exports = async (env, options) => {
           ? options.https
           : await devCerts.getHttpsServerOptions(),
       port: process.env.npm_package_config_dev_server_port || 3000,
-      stats: "verbose",
     },
-    stats: "verbose",
   }
-
   return config
 }
