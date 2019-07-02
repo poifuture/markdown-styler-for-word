@@ -92,11 +92,11 @@ c1 | c2 | Column 3 is long | c4
 
 ### Inline Style
 
-Sometimes the inline style suddenly apply to the entire paragraph, this is a [bug](https://github.com/OfficeDev/office-js/issues/586) in Word Online. The workaround is not to remark the end of file.
+The inline style doesn't work at all in both Word Online and Word Desktop because of different Microsoft issues. In Word Online (Chrome), the inline style will sometimes apply to the entire paragraph after the targeted range. See [bug](https://github.com/OfficeDev/office-js/issues/586). In on-premise Word (Word Desktop), the javascript engine is IE, which lacks the functionality of choosing the exact range.
 
 ### Whitespcaces
 
-As every web UI developer knows, a normal space (0x20) is different from a display space (0xA0, also known as &nbsp;). As a workaround, this Add-in will replace all nbsp to space before processing, and put nbsp back in document. It works fine for most cases, however, in rare scenarios, you will get nbsp in your clipboard. Be careful.
+As every web UI developer knows, a normal space (0x20, ascii 32) is different from a display space (0xA0, ascii 160, also known as nbsp, non-breaking space, hard space, etc.). As a workaround, this Add-in will replace all nbsp to space before processing, and put nbsp back in document. It works fine for most cases. However, in rare scenarios, you may accidentally get nbsp in your document. So... be careful.
 
 ### MS Word doesn't have a vim plugin
 

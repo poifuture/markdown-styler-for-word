@@ -10,7 +10,7 @@
   <DisplayName DefaultValue="Markdown Styler"/>
   <Description DefaultValue="Style your markdown document."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/logo-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/logo-80.png"/>
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/logo-filled.png"/>
   <SupportUrl DefaultValue="https://github.com/poifuture/word-add-in-markdown-style/issues"/>
   <AppDomains>
     <AppDomain>poi.dev</AppDomain>
@@ -37,9 +37,11 @@
               <Group id="CommandsGroup">
                 <Label resid="CommandsGroup.Label" />
                 <Icon>
-                  <bt:Image size="16" resid="AppIcon.16x16" />
-                  <bt:Image size="32" resid="AppIcon.32x32" />
-                  <bt:Image size="80" resid="AppIcon.80x80" />
+                  <bt:Image size="16" resid="SimpleLogo.16x16" />
+                  <bt:Image size="32" resid="SimpleLogo.32x32" />
+                  <bt:Image size="48" resid="SimpleLogo.48x48" />
+                  <bt:Image size="64" resid="SimpleLogo.64x64" />
+                  <bt:Image size="80" resid="Logo.80x80" />
                 </Icon>
 
                 <Control xsi:type="Button" id="RemarkSelectionButton">
@@ -99,9 +101,12 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="AppIcon.16x16" DefaultValue="https://localhost:3000/assets/logo-16.png"/>
-        <bt:Image id="AppIcon.32x32" DefaultValue="https://localhost:3000/assets/logo-32.png"/>
-        <bt:Image id="AppIcon.80x80" DefaultValue="https://localhost:3000/assets/logo-80.png"/>
+        <bt:Image id="Logo.80x80" DefaultValue="https://localhost:3000/assets/logo-80.png"/>
+        <bt:Image id="SimpleLogo.16x16" DefaultValue="https://localhost:3000/assets/logo-simple-16.png"/>
+        <bt:Image id="SimpleLogo.32x32" DefaultValue="https://localhost:3000/assets/logo-simple-32.png"/>
+        <bt:Image id="SimpleLogo.48x48" DefaultValue="https://localhost:3000/assets/logo-simple-48.png"/>
+        <bt:Image id="SimpleLogo.64x64" DefaultValue="https://localhost:3000/assets/logo-simple-64.png"/>
+        <bt:Image id="SimpleLogo.80x80" DefaultValue="https://localhost:3000/assets/logo-simple-80.png"/>
         <bt:Image id="SelectionIcon.16x16" DefaultValue="https://localhost:3000/assets/icon-chevron-down-16.png"/>
         <bt:Image id="SelectionIcon.32x32" DefaultValue="https://localhost:3000/assets/icon-chevron-down-32.png"/>
         <bt:Image id="SelectionIcon.80x80" DefaultValue="https://localhost:3000/assets/icon-chevron-down-80.png"/>
