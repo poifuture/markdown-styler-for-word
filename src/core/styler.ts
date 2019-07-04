@@ -32,7 +32,7 @@ const getPointCursur = async (
 ): Promise<Word.Range> => {
   console.debug("Getting point cursor... ", point)
   const pointParagraph = await getPointParagraph(range, point)
-  const charRanges = pointParagraph.getTextRanges([""])
+  const charRanges = pointParagraph.split([""])
   charRanges.load("items")
   await charRanges.context.sync()
   console.debug("Got paragraph char cursors: ", charRanges)
@@ -47,7 +47,7 @@ const getNodeRange = async (
   node: Unist.Node
 ): Promise<Word.Range> => {
   const startParagraph = await getPointParagraph(range, node.position.start)
-  const startCharRanges = startParagraph.getTextRanges([""])
+  const startCharRanges = startParagraph.split([""])
   startCharRanges.load("items")
   await startCharRanges.context.sync()
   const startCursor = startCharRanges.items[node.position.start.column - 1]
