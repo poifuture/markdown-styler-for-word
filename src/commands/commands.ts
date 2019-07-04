@@ -18,28 +18,14 @@ const g = getGlobal() as any
 
 g.onClickRemarkSelection = (event: Office.AddinCommands.Event) => {
   console.debug("[Ribbon] Remarking selection...", event)
-  Word.run(async context => {
-    await Styler.RemarkSelection(context)
-    await context.sync()
+  Styler.ProcessSelection().finally(() => {
+    event.completed()
   })
-    .catch(error => {
-      console.error(error)
-    })
-    .finally(() => {
-      event.completed()
-    })
 }
 
 g.onClickRemarkDocument = (event: Office.AddinCommands.Event) => {
   console.debug("[Ribbon] Remarking document...", event)
-  Word.run(async context => {
-    await Styler.RemarkDocument(context)
-    await context.sync()
+  Styler.ProcessDocument().finally(() => {
+    event.completed()
   })
-    .catch(error => {
-      console.error(error)
-    })
-    .finally(() => {
-      event.completed()
-    })
 }

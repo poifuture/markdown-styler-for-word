@@ -4,7 +4,7 @@ import RemarkFrontmatter from "remark-frontmatter"
 import RemarkParse from "remark-parse"
 import Prettier from "prettier/standalone"
 import PrettierMarkdown from "prettier/parser-markdown"
-import { hex, sleep } from "./utils"
+import { hex } from "./utils"
 
 const getCleanText = str =>
   str
@@ -73,26 +73,26 @@ const expandToParagraph = (range: Word.Range): Word.Range => {
   return range.expandTo(startCursor).expandTo(endCursor)
 }
 
-const excludeEOF = async (
-  range: Word.Range,
-  eof: Word.Range
-): Promise<Word.Range> => {
-  range.load()
-  await range.context.sync()
-  const hitEOF = range.intersectWithOrNullObject(eof)
-  hitEOF.load()
-  await hitEOF.context.sync()
-  if (hitEOF.isNullObject) {
-    console.warn("Miss EOF")
-    return range
-  }
-  console.error("Hit EOF")
-  const startCursor = range.getRange(Word.RangeLocation.start)
-  const endCursor = range.paragraphs
-    .getLast()
-    .getRange(Word.RangeLocation.start)
-  return startCursor.expandTo(endCursor)
-}
+// const excludeEOF = async (
+//   range: Word.Range,
+//   eof: Word.Range
+// ): Promise<Word.Range> => {
+//   range.load()
+//   await range.context.sync()
+//   const hitEOF = range.intersectWithOrNullObject(eof)
+//   hitEOF.load()
+//   await hitEOF.context.sync()
+//   if (hitEOF.isNullObject) {
+//     console.warn("Miss EOF")
+//     return range
+//   }
+//   console.error("Hit EOF")
+//   const startCursor = range.getRange(Word.RangeLocation.start)
+//   const endCursor = range.paragraphs
+//     .getLast()
+//     .getRange(Word.RangeLocation.start)
+//   return startCursor.expandTo(endCursor)
+// }
 
 interface UnistParentNode extends Unist.Node {
   children?: Unist.Node[]
@@ -175,78 +175,105 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
   return RemarkWordTransformer
 }
 
-const RemarkRange = async (range: Word.Range) => {
-  const context = range.context
-  console.debug("Getting remark range...")
+const ProcessStyler = async (range: Word.Range) => {
+  await Word.run(async () => {
+    console.debug("Parsing markdown document...")
+    range.load()
+    await range.context.sync()
+    const remarkText = getCleanText(range.text)
+    const remarkPromise = new Promise((resolve, reject) => {
+      Unified()
+        .use(RemarkParse)
+        .use(RemarkFrontmatter, ["yaml", "toml"])
+        .use(RemarkWord, { range: range })
+        .process(remarkText, (error, _) => {
+          if (error) {
+            reject(error)
+          }
+          resolve("")
+        })
+    })
+    await remarkPromise
+    console.info("Walking through done.")
+    await range.context.sync()
+  })
+  console.info("Styler process done.")
+}
+const ProcessPrettier = async (range: Word.Range) => {
+  await Word.run(async () => {
+    console.debug("Fetching document content...")
+    range.load()
+    await range.context.sync()
+    const originalText = getCleanText(range.text)
+    if (originalText == "") {
+      console.error("No text is selected")
+      return
+    }
+    console.info("Original Text: ", originalText, await hex(originalText))
 
-  // This workaround **may** reduce the chance to hit the inline style bug
-  // https://github.com/OfficeDev/office-js/issues/586
-  const remarkRange = await excludeEOF(
-    range,
-    context.document.body.getRange(Word.RangeLocation.end)
-  )
+    console.debug("Prettifying markdown document...")
+    const prettyText = Prettier.format(originalText, {
+      parser: "markdown",
+      plugins: [PrettierMarkdown],
+      proseWrap: "never", // [always,never,preserve]
+    })
+    console.info("Pretty Text: ", prettyText, await hex(prettyText))
 
-  console.debug("Clearing original format...")
-  remarkRange.styleBuiltIn = Word.Style.normal
+    console.debug("Replacing prettier document...")
+    range.insertText(getDisplayText(prettyText), Word.InsertLocation.replace)
+    await range.context.sync()
+  })
+  console.info("Prettier process done.")
+}
 
-  console.debug("Fetching document content...")
-  remarkRange.load()
-  await context.sync()
-  const originalText = getCleanText(remarkRange.text)
-  if (originalText == "") {
-    console.error("No text is selected")
+const ProcessRange = async (range: Word.Range) => {
+  await Word.run(async () => {
+    console.debug("Reseting style ...")
+    range.styleBuiltIn = Word.Style.normal
+    await range.context.sync()
+  })
+  await ProcessPrettier(range)
+  await ProcessStyler(range)
+  console.info("All processes done.")
+}
+export const ProcessSelection = async () => {
+  try {
+    let remarkRange: Word.Range = undefined
+    await Word.run(async context => {
+      console.debug("Getting selection range...")
+      const inputRange = expandToParagraph(context.document.getSelection())
+      remarkRange = inputRange
+      context.trackedObjects.add(remarkRange)
+      await context.sync()
+    })
+    ProcessRange(remarkRange)
+  } catch (error) {
+    console.error(error)
   }
-  console.info("Original Text: ", originalText, await hex(originalText))
-
-  console.debug("Prettifying markdown document...")
-  const prettyText = Prettier.format(originalText, {
-    parser: "markdown",
-    plugins: [PrettierMarkdown],
-    proseWrap: "never", // [always,never,preserve]
-  })
-  console.info("Pretty Text: ", prettyText, await hex(prettyText))
-
-  console.debug("Replacing markdown document...")
-  remarkRange.insertText(
-    getDisplayText(prettyText),
-    Word.InsertLocation.replace
-  )
-  remarkRange.load()
-  await context.sync()
-
-  console.debug("Parsing markdown document...")
-  const remarkText = getCleanText(remarkRange.text)
-  const remarkPromise = new Promise((resolve, reject) => {
-    Unified()
-      .use(RemarkParse)
-      .use(RemarkFrontmatter, ["yaml", "toml"])
-      .use(RemarkWord, { range: remarkRange })
-      .process(remarkText, (error, _) => {
-        if (error) {
-          reject(error)
-        }
-        resolve("")
-      })
-  })
-  await remarkPromise
-  console.info("Remark done.")
-
-  await context.sync()
-  await sleep(5000)
 }
-
-export const RemarkSelection = async (context: Word.RequestContext) => {
-  console.debug("Getting selection range...")
-  const inputRange = expandToParagraph(context.document.getSelection())
-  return RemarkRange(inputRange)
-}
-export const RemarkDocument = async (context: Word.RequestContext) => {
-  console.debug("Getting document range...")
-  const inputRange = context.document.body.getRange()
-  return RemarkRange(inputRange)
+export const ProcessDocument = async () => {
+  try {
+    let remarkRange: Word.Range = undefined
+    await Word.run(async context => {
+      console.debug("Getting document range...")
+      const inputRange = context.document.body.getRange()
+      // This workaround **may** reduce the chance to hit the inline style bug
+      // https://github.com/OfficeDev/office-js/issues/586
+      // const shrinkRange = await excludeEOF(
+      //   inputRange,
+      //   context.document.body.getRange(Word.RangeLocation.end)
+      // )
+      remarkRange = inputRange
+      context.trackedObjects.add(remarkRange)
+      await context.sync()
+    })
+    ProcessRange(remarkRange)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export default {
-  RemarkSelection: RemarkSelection,
-  RemarkDocument: RemarkDocument,
+  ProcessSelection: ProcessSelection,
+  ProcessDocument: ProcessDocument,
 }

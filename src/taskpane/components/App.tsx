@@ -201,26 +201,12 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
 
   remarkSelection = async () => {
     console.debug("Remarking selection...")
-    try {
-      Word.run(async context => {
-        await Styler.RemarkSelection(context)
-        await context.sync()
-      })
-    } catch (error) {
-      console.error(error)
-    }
+    await Styler.ProcessSelection()
   }
 
   remarkDocument = async () => {
     console.debug("Remarking entire document...")
-    try {
-      Word.run(async context => {
-        await Styler.RemarkDocument(context)
-        await context.sync()
-      })
-    } catch (error) {
-      console.error(error)
-    }
+    await Styler.ProcessDocument()
   }
 
   dismissGetStarted = async (insert?: boolean) => {
