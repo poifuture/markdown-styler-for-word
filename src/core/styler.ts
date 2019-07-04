@@ -6,6 +6,13 @@ import Prettier from "prettier/standalone"
 import PrettierMarkdown from "prettier/parser-markdown"
 import { hex } from "./utils"
 
+const DEFAULT_SETTINGS = {
+  enableStyler: true,
+  inlineStyle: true,
+  enablePrettier: true,
+  proseWrap: false,
+}
+
 const getCleanText = (str: string): string =>
   str
     .replace(/(?:\r\n|\r|\n)/g, "\n") // crlf
@@ -13,6 +20,29 @@ const getCleanText = (str: string): string =>
 
 const getDisplayText = (str: string): string =>
   str.replace(/[ ]{2,}/g, (match: String) => "\xA0".repeat(match.length)) // &nbsp;
+
+const loadSettings = async () => {
+  console.debug("Loading addin settings...")
+  const loadSettingsPromise = new Promise((resolve, reject) => {
+    Office.context.document.settings.refreshAsync(result => {
+      console.debug("Loaded addin settings result: ", result)
+      if (result.status !== Office.AsyncResultStatus.Succeeded) {
+        reject(result.error)
+      }
+      resolve()
+    })
+  })
+  await loadSettingsPromise
+  const settings = Office.context.document.settings.get("settings")
+  const profile = Office.context.document.settings.get("profile")
+  console.info("Loaded Settings: ", settings, "Profile: ", profile)
+  if (!settings) {
+    // Frist time startup
+    Office.context.document.settings.set("settings", DEFAULT_SETTINGS)
+    return DEFAULT_SETTINGS
+  }
+  return settings
+}
 
 const getPointParagraph = async (
   range: Word.Range,
@@ -86,8 +116,10 @@ const UnistDFS = async (node: Unist.Node, visitor: VisitorFunction) => {
 const RemarkWord: UnifiedModule.Attacher = function(options: {
   // Cant use arrow function here because the context of 'this' will be different
   range: Word.Range
+  inlineStyle?: boolean
 }) {
   const range = options.range
+  const inlineStyle = options.inlineStyle ? true : false // strip undefined
   const RemarkWordTransformer: UnifiedModule.Transformer = async (
     tree,
     _
@@ -95,6 +127,7 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
     console.debug("Tree: ", tree)
     range.paragraphs.load()
     await range.context.sync()
+    // Note: Don't try to apply styles in a parallel way. Will face unpredictable behavior!
     await UnistDFS(tree, async (node: Unist.Node) => {
       console.debug("Node: ", node)
       switch (node.type) {
@@ -132,6 +165,9 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
           break
         }
         case "strong": {
+          if (!inlineStyle) {
+            break
+          }
           const nodeRange = await getNodeRange(range, node)
           nodeRange.styleBuiltIn = Word.Style.strong
           nodeRange.font.color = "darkblue"
@@ -148,7 +184,10 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
   return RemarkWordTransformer
 }
 
-const ProcessStyler = async (range: Word.Range) => {
+const ProcessStyler = async (
+  range: Word.Range,
+  options: { inlineStyle?: boolean } = {}
+) => {
   await Word.run(async () => {
     console.debug("Parsing markdown document...")
     range.load()
@@ -158,7 +197,7 @@ const ProcessStyler = async (range: Word.Range) => {
       Unified()
         .use(RemarkParse)
         .use(RemarkFrontmatter, ["yaml", "toml"])
-        .use(RemarkWord, { range: range })
+        .use(RemarkWord, { range: range, inlineStyle: options.inlineStyle })
         .process(remarkText, (error, _) => {
           if (error) {
             reject(error)
@@ -172,7 +211,10 @@ const ProcessStyler = async (range: Word.Range) => {
   })
   console.info("Styler process done.")
 }
-const ProcessPrettier = async (range: Word.Range) => {
+const ProcessPrettier = async (
+  range: Word.Range,
+  options: { proseWrap?: boolean } = {}
+) => {
   await Word.run(async () => {
     console.debug("Fetching document content...")
     range.load()
@@ -188,7 +230,7 @@ const ProcessPrettier = async (range: Word.Range) => {
     const prettyText: string = Prettier.format(originalText, {
       parser: "markdown",
       plugins: [PrettierMarkdown],
-      proseWrap: "never", // [always,never,preserve]
+      proseWrap: options.proseWrap ? "always" : "never", // [always,never,preserve]
     })
     console.info("Pretty Text: ", prettyText, await hex(prettyText))
 
@@ -209,15 +251,21 @@ const ProcessPrettier = async (range: Word.Range) => {
 }
 
 const ProcessRange = async (range: Word.Range) => {
+  const settings = await loadSettings()
   await Word.run(async () => {
     console.debug("Reseting style ...")
     range.styleBuiltIn = Word.Style.normal
     await range.context.sync()
   })
-  await ProcessPrettier(range)
-  await ProcessStyler(range)
+  if (settings.enablePrettier) {
+    await ProcessPrettier(range, { proseWrap: settings.proseWrap })
+  }
+  if (settings.enableStyler) {
+    await ProcessStyler(range, { inlineStyle: settings.inlineStyle })
+  }
   console.info("All processes done.")
 }
+
 export const ProcessSelection = async () => {
   try {
     let remarkRange: Word.Range = undefined

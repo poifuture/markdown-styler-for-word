@@ -35,19 +35,21 @@ const ProfileRecord = Record<ProfileType>({
   showMessages: Map<string, boolean>(),
 })
 interface SettingsType {
+  enableStyler: boolean
   inlineStyle: boolean
-  prettier: boolean
+  enablePrettier: boolean
   proseWrap: boolean
 }
 const SettingsRecord = Record<SettingsType>({
+  enableStyler: true,
   inlineStyle: true,
-  prettier: true,
+  enablePrettier: true,
   proseWrap: false,
 })
 export interface AppStateType {
-  messages: List<Record<MessageType>>
-  profile: Record<ProfileType>
   settings: Record<SettingsType>
+  profile: Record<ProfileType>
+  messages: List<Record<MessageType>>
 }
 
 // Styles
@@ -87,14 +89,35 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
   constructor(props, context) {
     super(props, context)
     this.state = {
-      messages: List<Record<MessageType>>(),
       settings: SettingsRecord(),
       profile: ProfileRecord(),
+      messages: List<Record<MessageType>>(),
     }
-    console.debug("jason:appconst", this.state)
+    console.info("Initial props: ", this.props, "Initial state: ", this.state)
   }
 
   componentDidMount() {
+    Office.context.document.settings.refreshAsync(result => {
+      try {
+        console.debug("Loaded addin settings: ", result)
+        const settings = Office.context.document.settings.get("settings")
+        const profile = Office.context.document.settings.get("profile")
+        console.info("Loaded Settings: ", settings, "Profile: ", profile)
+        profile.showMessages = Map(profile.showMessages)
+        this.setState(
+          {
+            settings: SettingsRecord(settings),
+            profile: ProfileRecord(profile),
+          },
+          () => {
+            console.debug("Loaded state: ", this.state)
+          }
+        )
+      } catch (error) {
+        console.error(error)
+      }
+    })
+
     this.setState(() => {
       return {
         messages: List<Record<MessageType>>([
@@ -107,27 +130,9 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
             isDismissable: true,
           }),
           MessageRecord({
-            id: "InlineStyleOnline",
-            content: [
-              <span key="text">
-                Known issue: Inline style may apply to the entire paragraph due
-                to a bug in MS Word Online. See
-              </span>,
-              <Fabric.Link
-                key="link"
-                href="https://github.com/OfficeDev/office-js/issues/586"
-              >
-                office-js/issue#586
-              </Fabric.Link>,
-            ],
-            type: Fabric.MessageBarType.warning,
-            display: true,
-            isDismissable: false,
-          }),
-          MessageRecord({
-            id: "InlineStyleDesktop",
+            id: "DesktopSupport",
             content:
-              "Known issue: Inline style may apply to wrong range in Word Desktop",
+              "Known issue: Word Desktop is not supported for now as it's using IE as internal javascript engine",
             type: Fabric.MessageBarType.warning,
             display: true,
             isDismissable: true,
@@ -141,9 +146,16 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
             isDismissable: true,
           }),
           MessageRecord({
+            id: "DocumentSettings",
+            content: "Add-in settings are stored per documend",
+            type: Fabric.MessageBarType.info,
+            display: true,
+            isDismissable: true,
+          }),
+          MessageRecord({
             id: "FindReadme",
             content: "Above messages can be found in Readme",
-            type: Fabric.MessageBarType.info,
+            type: Fabric.MessageBarType.success,
             display: true,
             isDismissable: true,
           }),
@@ -209,11 +221,37 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
     await Styler.ProcessDocument()
   }
 
+  saveSettings = () => {
+    console.debug("Saving settings...")
+    const settings = this.state.settings.toJS()
+    const profile = this.state.profile.toJS()
+    console.debug("Settings: ", settings, "Profile: ", profile)
+    Office.context.document.settings.set("settings", settings)
+    Office.context.document.settings.set("profile", profile)
+    Office.context.document.settings.saveAsync(result => {
+      console.info("Settings saved: ", result)
+    })
+  }
+
+  resetSettings = () => {
+    console.debug("Reseting settings...")
+    this.setState(
+      {
+        settings: SettingsRecord(),
+        profile: ProfileRecord(),
+      },
+      this.saveSettings
+    )
+  }
+
   dismissGetStarted = async (insert?: boolean) => {
     console.debug("Dismissing GetStarted ...")
-    this.setState(state => ({
-      profile: state.profile.set("showGetStarted", false),
-    }))
+    this.setState(
+      state => ({
+        profile: state.profile.set("showGetStarted", false),
+      }),
+      this.saveSettings
+    )
     if (insert) {
       await this.insertReadme()
     }
@@ -221,28 +259,30 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
 
   dismissMessage = async messageId => {
     console.debug("Dismissing message: ", messageId)
-    this.setState(state => {
-      return {
+    this.setState(
+      state => ({
         profile: state.profile.set(
           "showMessages",
           state.profile.get("showMessages").set(messageId, false)
         ),
-      }
-    })
+      }),
+      this.saveSettings
+    )
   }
 
   mergeSettings = async (partialSettings: Partial<SettingsType>) => {
     console.info("Merging settings: ", partialSettings)
-    this.setState({ settings: this.state.settings.merge(partialSettings) })
+    this.setState(
+      { settings: this.state.settings.merge(partialSettings) },
+      this.saveSettings
+    )
   }
 
   render() {
-    const { title, isOfficeInitialized } = this.props
-
-    if (!isOfficeInitialized) {
+    if (!this.props.isOfficeInitialized) {
       return (
         <Progress
-          title={title}
+          title={this.props.title}
           logo="assets/logo-filled.png"
           message="Make Word a markdown friendly collaborative editor"
         />
@@ -347,8 +387,18 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
           <div className="ms-Grid-row">
             <ElementContainer>
               <Fabric.Toggle
-                defaultChecked={this.state.settings.get("inlineStyle")}
-                label="Inline Style"
+                checked={this.state.settings.get("enableStyler")}
+                label="Enable Styler"
+                inlineLabel={true}
+                onChange={(_, checked) => {
+                  this.mergeSettings({ enableStyler: checked })
+                }}
+              />
+            </ElementContainer>
+            <ElementContainer>
+              <Fabric.Toggle
+                checked={this.state.settings.get("inlineStyle")}
+                label="Styler: Inline Style"
                 inlineLabel={true}
                 onChange={(_, checked) => {
                   this.mergeSettings({ inlineStyle: checked })
@@ -357,23 +407,32 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
             </ElementContainer>
             <ElementContainer>
               <Fabric.Toggle
-                defaultChecked={this.state.settings.get("prettier")}
-                label="Prettier"
+                checked={this.state.settings.get("enablePrettier")}
+                label="Enable Prettier"
                 inlineLabel={true}
                 onChange={(_, checked) => {
-                  this.mergeSettings({ prettier: checked })
+                  this.mergeSettings({ enablePrettier: checked })
                 }}
               />
             </ElementContainer>
             <ElementContainer>
               <Fabric.Toggle
-                defaultChecked={this.state.settings.get("proseWrap")}
-                label="Prose Wrap"
+                checked={this.state.settings.get("proseWrap")}
+                label="Prettier: Prose Wrap"
                 inlineLabel={true}
                 onChange={(_, checked) => {
                   this.mergeSettings({ proseWrap: checked })
                 }}
               />
+            </ElementContainer>
+            <ElementContainer>
+              <Fabric.DefaultButton
+                style={ButtonStyle}
+                iconProps={{ iconName: "ChevronDownEnd6" }}
+                onClick={this.resetSettings}
+              >
+                Reset Settings
+              </Fabric.DefaultButton>
             </ElementContainer>
           </div>
         </main>
