@@ -6,22 +6,22 @@ import Prettier from "prettier/standalone"
 import PrettierMarkdown from "prettier/parser-markdown"
 import { hex } from "./utils"
 
-const getCleanText = str =>
+const getCleanText = (str: string): string =>
   str
     .replace(/(?:\r\n|\r|\n)/g, "\n") // crlf
     .replace(/\xA0/g, " ") // &nbsp;
 
-const getDisplayText = str =>
+const getDisplayText = (str: string): string =>
   str.replace(/[ ]{2,}/g, (match: String) => "\xA0".repeat(match.length)) // &nbsp;
 
 const getPointParagraph = async (
   range: Word.Range,
   point: Unist.Point
 ): Promise<Word.Paragraph> => {
-  console.debug("getPointParagraph", point)
-  range.paragraphs.load()
+  console.debug("Geting point paragraph... ", point)
+  range.paragraphs.load("items")
   await range.paragraphs.context.sync()
-  console.debug("target", range.paragraphs.items[point.line - 1])
+  console.debug("Got paragraph: ", range.paragraphs.items[point.line - 1])
   return range.paragraphs.items[point.line - 1]
 }
 
@@ -30,14 +30,12 @@ const getPointCursur = async (
   point: Unist.Point,
   options: { isEnd: boolean }
 ): Promise<Word.Range> => {
-  console.debug("getPointCursur", point)
+  console.debug("Getting point cursor... ", point)
   const pointParagraph = await getPointParagraph(range, point)
-  pointParagraph.load()
-  await pointParagraph.context.sync()
   const charRanges = pointParagraph.getTextRanges([""])
-  charRanges.load()
+  charRanges.load("items")
   await charRanges.context.sync()
-  console.debug("cursur", charRanges)
+  console.debug("Got paragraph char cursors: ", charRanges)
   const pointCursor = options.isEnd
     ? charRanges.items[point.column - 2]
     : charRanges.items[point.column - 1]
@@ -49,10 +47,8 @@ const getNodeRange = async (
   node: Unist.Node
 ): Promise<Word.Range> => {
   const startParagraph = await getPointParagraph(range, node.position.start)
-  startParagraph.load()
-  await startParagraph.context.sync()
   const startCharRanges = startParagraph.getTextRanges([""])
-  startCharRanges.load()
+  startCharRanges.load("items")
   await startCharRanges.context.sync()
   const startCursor = startCharRanges.items[node.position.start.column - 1]
   const endCursor =
@@ -72,27 +68,6 @@ const expandToParagraph = (range: Word.Range): Word.Range => {
   const endCursor = range.paragraphs.getLast().getRange(Word.RangeLocation.end)
   return range.expandTo(startCursor).expandTo(endCursor)
 }
-
-// const excludeEOF = async (
-//   range: Word.Range,
-//   eof: Word.Range
-// ): Promise<Word.Range> => {
-//   range.load()
-//   await range.context.sync()
-//   const hitEOF = range.intersectWithOrNullObject(eof)
-//   hitEOF.load()
-//   await hitEOF.context.sync()
-//   if (hitEOF.isNullObject) {
-//     console.warn("Miss EOF")
-//     return range
-//   }
-//   console.error("Hit EOF")
-//   const startCursor = range.getRange(Word.RangeLocation.start)
-//   const endCursor = range.paragraphs
-//     .getLast()
-//     .getRange(Word.RangeLocation.start)
-//   return startCursor.expandTo(endCursor)
-// }
 
 interface UnistParentNode extends Unist.Node {
   children?: Unist.Node[]
@@ -126,15 +101,13 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
         case "yaml": {
           const nodeRange = await getNodeRange(range, node)
           nodeRange.font.color = "darkblue"
-          nodeRange.load()
           await nodeRange.context.sync()
           const titleParagraph = nodeRange
             .search("title:")
             .getFirst()
             .paragraphs.getFirst()
-            .load()
-          await titleParagraph.context.sync()
           titleParagraph.styleBuiltIn = Word.Style.title
+          await titleParagraph.context.sync()
           break
         }
         case "heading": {
@@ -212,15 +185,24 @@ const ProcessPrettier = async (range: Word.Range) => {
     console.info("Original Text: ", originalText, await hex(originalText))
 
     console.debug("Prettifying markdown document...")
-    const prettyText = Prettier.format(originalText, {
+    const prettyText: string = Prettier.format(originalText, {
       parser: "markdown",
       plugins: [PrettierMarkdown],
       proseWrap: "never", // [always,never,preserve]
     })
     console.info("Pretty Text: ", prettyText, await hex(prettyText))
 
+    let fixedText = prettyText
+    if (originalText.startsWith("\n") && !fixedText.startsWith("\n")) {
+      fixedText = "\n" + fixedText
+    }
+    if (!originalText.endsWith("\n") && fixedText.endsWith("\n")) {
+      fixedText = fixedText.slice(0, -1)
+    }
+    console.debug("Fixed Text: ", fixedText)
+
     console.debug("Replacing prettier document...")
-    range.insertText(getDisplayText(prettyText), Word.InsertLocation.replace)
+    range.insertText(getDisplayText(fixedText), Word.InsertLocation.replace)
     await range.context.sync()
   })
   console.info("Prettier process done.")
@@ -246,7 +228,7 @@ export const ProcessSelection = async () => {
       context.trackedObjects.add(remarkRange)
       await context.sync()
     })
-    ProcessRange(remarkRange)
+    await ProcessRange(remarkRange)
   } catch (error) {
     console.error(error)
   }
@@ -257,17 +239,11 @@ export const ProcessDocument = async () => {
     await Word.run(async context => {
       console.debug("Getting document range...")
       const inputRange = context.document.body.getRange()
-      // This workaround **may** reduce the chance to hit the inline style bug
-      // https://github.com/OfficeDev/office-js/issues/586
-      // const shrinkRange = await excludeEOF(
-      //   inputRange,
-      //   context.document.body.getRange(Word.RangeLocation.end)
-      // )
       remarkRange = inputRange
       context.trackedObjects.add(remarkRange)
       await context.sync()
     })
-    ProcessRange(remarkRange)
+    await ProcessRange(remarkRange)
   } catch (error) {
     console.error(error)
   }
