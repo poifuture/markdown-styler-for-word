@@ -35,18 +35,18 @@ Styler" -> Add
 
 ## Warning
 
-We aim to apply only styles to your document without changing your content.
-However, your work might be lost if there are bugs in the add-in. If it happens,
-please remember to use the document history feature of MS Word to retrieve your
-work.
+If any content is missing, try the "History" feature of MS Word. (Open folder in
+OneDrive Online -> Right click the file -> Version history)
 
 ## Why MS Word (Online)
 
-- Real time collaborative editing
-- Good integration with MS products family and MS accounts
+- Good integration with MS products family and **Office Enterprise accounts**
+- More acceptable by tradition companys
+- Real time collaborative editing (buggy but usable)
+- Version history (extremely buggy comparing to ...)
 - China friendly
 - Free! (For personal use) (From developer: We paid Office 365!)
-- ~~Rich functionality~~ Buggy
+- ~~Rich functionality~~ Rich bugs
 
 ## What it does
 

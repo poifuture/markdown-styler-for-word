@@ -12,10 +12,9 @@
     "dev-server-port": 3000
   },
   "scripts": {
-    "build": "echo 'Note: BundleAnalyzer will hang during exit. Just quit the process manually.' && webpack -p --mode production --https false",
+    "build": "echo 'Note: Bundle Analyzer may block build, remember to check it.' && webpack -p --mode production --https false && bash ./scripts/build-webpack-post.sh build",
     "build:dev": "webpack --mode development --https false",
     "build-dev": "webpack --mode development --https false && echo . && echo . && echo . && echo Please use 'build:dev' instead of 'build-dev'.",
-    "build:readme": "bash ./scripts/build-readme.sh node",
     "dev-server": "webpack-dev-server --mode development",
     "sideload": "office-toolbox sideload -m manifest.xml -a word",
     "start": "office-addin-debugging start manifest.xml",

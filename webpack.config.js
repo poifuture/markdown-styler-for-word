@@ -52,7 +52,9 @@ module.exports = async (env, options) => {
       },
     },
     plugins: [
-      new BundleAnalyzerPlugin(), // Note: this will cause "yarn build" hanging without exit.
+      // Note: Bundle Analyzer will open a server and block "yarn build" at the end.
+      // Use only when needed
+      // new BundleAnalyzerPlugin(),
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin([
         {
