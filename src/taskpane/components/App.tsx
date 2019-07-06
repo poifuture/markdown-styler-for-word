@@ -5,6 +5,7 @@ import HeroList from "./HeroList"
 import Progress from "./Progress"
 import Styler from "../../core/styler"
 import ReadmeMarkdown from "raw-loader!../../README.md"
+import DEBUG from "../../core/debug"
 
 // Types
 
@@ -76,9 +77,6 @@ class ElementContainer extends React.Component {
 
 // Data
 
-const devMarkdown = `
-It's a **strong** word
-`
 const CongratsText = `<!-- Congratulations! Your team's life becomes much easier! Now, click on "Remark Document" to continue reading. -->`
 
 // Component
@@ -165,8 +163,11 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
   }
 
   clickDevButton = async () => {
+    console.log("State: ", this.state)
+    const devMarkdown = `
+It's a **strong** word
+`
     return Word.run(async context => {
-      console.log("State: ", this.state)
       const paragraph = context.document.body.insertText(
         devMarkdown,
         Word.InsertLocation.replace
@@ -318,15 +319,17 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
           </Fabric.Stack>
           <Fabric.Separator># Home</Fabric.Separator>
           <div className="ms-Grid-row">
-            <ElementContainer>
-              <Fabric.DefaultButton
-                style={ButtonStyle}
-                iconProps={{ iconName: "ChevronRight" }}
-                onClick={this.clickDevButton}
-              >
-                Dev Button
-              </Fabric.DefaultButton>
-            </ElementContainer>
+            {DEBUG && (
+              <ElementContainer>
+                <Fabric.DefaultButton
+                  style={ButtonStyle}
+                  iconProps={{ iconName: "ChevronRight" }}
+                  onClick={this.clickDevButton}
+                >
+                  Dev Button
+                </Fabric.DefaultButton>
+              </ElementContainer>
+            )}
             <ElementContainer>
               <span ref={span => (this.GetStartedSpan = span)}>
                 <Fabric.DefaultButton

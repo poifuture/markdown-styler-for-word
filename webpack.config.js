@@ -3,11 +3,11 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const CopyWebpackPlugin = require("copy-webpack-plugin")
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const TerserPlugin = require("terser-webpack-plugin")
 const webpack = require("webpack")
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer")
 
 module.exports = async (env, options) => {
-  const dev = options.mode === "development"
   const config = {
     devtool: "source-map",
     entry: {
@@ -50,11 +50,28 @@ module.exports = async (env, options) => {
       splitChunks: {
         chunks: "all",
       },
+      ...(options.mode === "production" && {
+        minimizer: [
+          new TerserPlugin({
+            parallel: true,
+            cache: true,
+            sourceMap: true,
+            terserOptions: {
+              compress: {
+                global_defs: {
+                  DEBUG: false,
+                },
+                pure_funcs: ["console.debug", "console.info"],
+              },
+            },
+          }),
+        ],
+      }),
     },
     plugins: [
       // Note: Bundle Analyzer will open a server and block "yarn build" at the end.
       // Use only when needed
-      // new BundleAnalyzerPlugin(),
+      ...(options.mode === "development" ? [new BundleAnalyzerPlugin()] : []),
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin([
         {
