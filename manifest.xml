@@ -7,7 +7,7 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Poifuture</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="Markdown Styler"/>
+  <DisplayName DefaultValue="Markdown Styler Dogfood"/>
   <Description DefaultValue="Style your markdown document."/>
   <IconUrl DefaultValue="https://localhost:3000/assets/logo-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/logo-filled.png"/>
@@ -124,7 +124,7 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Welcome to use Markdown Styler!" />
-        <bt:String id="CommandsGroup.Label" DefaultValue="Markdown Styler" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="Markdown Styler Dogfood" />
         <bt:String id="RemarkSelectionButton.Label" DefaultValue="Remark Selection" />
         <bt:String id="RemarkDocumentButton.Label" DefaultValue="Remark Document" />
         <bt:String id="OptionButton.Label" DefaultValue="Options" />
