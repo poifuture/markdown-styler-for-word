@@ -1,6 +1,6 @@
 {
   "name": "markdown-styler-for-word",
-  "version": "0.0.1",
+  "version": "0.20190706.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/poifuture/markdown-styler-for-word"
@@ -14,12 +14,13 @@
   "scripts": {
     "build": "echo 'Note: Bundle Analyzer may block build, remember to check it.' && webpack -p --mode production --https false && bash ./scripts/build-webpack-post.sh build",
     "build:dev": "webpack --mode development --https false",
-    "build-dev": "webpack --mode development --https false && echo . && echo . && echo . && echo Please use 'build:dev' instead of 'build-dev'.",
-    "dev-server": "webpack-dev-server --mode development",
+    "release": "yarn build && rm -rf docs && mv dist docs",
     "sideload": "office-toolbox sideload -m manifest.xml -a word",
     "start": "office-addin-debugging start manifest.xml",
     "start:desktop": "office-addin-debugging start manifest.xml desktop",
     "start:web": "office-addin-debugging start manifest.xml web",
+    "start:dev": "webpack-dev-server --mode development",
+    "start:prod": "webpack-dev-server --mode production",
     "stop": "office-addin-debugging stop manifest.xml",
     "unload": "office-toolbox remove -m manifest.xml -a word",
     "validate": "office-toolbox validate -m manifest.xml",
