@@ -9,7 +9,7 @@ version=$(cat nextversion)
 
 cat ./manifest.xml \
   | sed "s/https[:][/][/]localhost[:]3000/https:\/\/poifuture.github.io\/markdown-styler-for-word/g" \
-  | sed "s/[<]Version[>].*[<][/]Version[>]/<Version>0.$(date '+%Y%m%d').$version<\/Version>/g" \
+  | sed "s/[<]Version[>].*[<][/]Version[>]/<Version>0.$(date '+%Y%m%d').$version.0<\/Version>/g" \
   > ./dist/manifest.xml
 
 cat ./src/README.md \
