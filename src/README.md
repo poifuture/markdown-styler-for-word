@@ -13,7 +13,7 @@ author: poifuture
 
 Welcome to markdown world!
 This MS Word add-in aims to apply styles to your markdown document without changing your content.
-You can easily view your document with a better style while collaborating with others.
+You can easily view your document with a better look while real-time collaborating with others.
 Our team is actively using it for writing our meeting notes.
 
 <!-- INSTALL SECTION BEGIN  -->
