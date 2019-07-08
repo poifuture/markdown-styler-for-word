@@ -58,7 +58,8 @@ There might be unexpected changes happen. If any content is missing, try the "Hi
 
 ## What "Setup Document Theme" does
 
-* [Not Implemented] Change the theme font of your document
+* Nothing
+* [Not Implemented] ~~Change the theme font of your document~~
   - Font: Courier New (A monospace font)
   - Size: 10 (To make each line contains >=80 chars)
 
