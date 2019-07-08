@@ -27,7 +27,7 @@ Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Sty
 ## Usage
 
 1. Carefully read the Readme and Warning before using it
-1. (Optional) Setup the document theme
+1. (Optional) (Not Implemented) Setup the document theme for a better style (e.g. monospace font)
 1. Click "Remark Document"
 1. (Optional) Customize the built-in styles (Normal, Heading1, etc.) of the document theme in MS Word
 
