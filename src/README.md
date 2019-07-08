@@ -35,7 +35,7 @@ Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Sty
 
 There might be unexpected changes happen. If any content is missing, try the "History" feature of MS Word. (Open folder in OneDrive Online -> Right click the file -> Version history)
 
-## Why MS Word (Office 365)
+## Why MS Word Online
 
 * Good integration with MS products family and **Office Enterprise accounts**
 * Acceptable by traditional companies
