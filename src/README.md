@@ -20,32 +20,35 @@ Our team is actively using it for writing our meeting notes.
 
 ## Install
 
-Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Styler" -> Add
+Open MS Word Online -> Insert" -> "Office Add-ins" -> "Store -> Search "Markdown Styler" -> Add
+
+If the add-in is succesfully installed, the add-in will appear in the "Home" tab with a "Remark Selection" button.
 
 <!-- INSTALL SECTION END -->
 
 ## Usage
 
+1. Click "Option" in "Markdown Styler" section (click "..." if you don't find it)
 1. Carefully read the Readme and Warning before using it
 1. (Optional) (Not Implemented) Setup the document theme for a better style (e.g. monospace font)
-1. Click "Remark Document"
+1. Click "Remark Document" (it will style the whole document)
 1. (Optional) Customize the built-in styles (Normal, Heading1, etc.) of the document theme in MS Word
 
 ## Warning
 
 There might be unexpected changes happen. If any content is missing, try the "History" feature of MS Word. (Open folder in OneDrive Online -> Right click the file -> Version history)
 
-## Why MS Word (Office 365)
+## Why MS Word Online
 
 * Good integration with MS products family and **Office Enterprise accounts**
 * Acceptable by traditional companies
 * Real-time collaborative editing (buggy but usable)
 * Version history (extremely buggy comparing to ...)
-* Available for all over the world (including China)
+* China friendly
 * Free! (For personal use) (For our team: We paid Office 365!)
 * ~~Rich functionality~~ Rich bugs
 
-## What "Remark Document" does
+## What "Remark Document" & "Remark Selection" does
 
 1. Clear all existing styles
 1. Format your document with [Prettier](https://github.com/prettier/prettier)
@@ -56,7 +59,7 @@ There might be unexpected changes happen. If any content is missing, try the "Hi
 1. [Not Implemented] Apply syntax highlights to your code block with [Highlight.js](https://github.com/highlightjs/highlight.js/)
 1. [Not Implemented] ~~Watch live changes and apply style after typing Enter~~
 
-## What "Setup Document Theme" does
+## What "Setup Theme" does
 
 * Nothing
 * [Not Implemented] ~~Change the theme font of your document~~
@@ -117,7 +120,7 @@ If we get can an average rating over 4/5.
 
 > Alternatives?
 
-Try [SlackEdit](https://stackedit.io/) if you prefer an standalone app!
+Try [SlackEdit](https://stackedit.io/) if you prefer an independent app!
 
 ## Appreciation
 
