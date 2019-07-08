@@ -54,7 +54,7 @@ There might be unexpected changes happen. If any content is missing, try the "Hi
    1. [Not Implemented] Prettier will format your code block
 1. Parse your markdown styles with [Remark](https://github.com/remarkjs/remark)
 1. [Not Implemented] Apply syntax highlights to your code block with [Highlight.js](https://github.com/highlightjs/highlight.js/)
-1. [Not Implemented] Watch live changes and apply style after typing Enter
+1. [Not Implemented] ~~Watch live changes and apply style after typing Enter~~
 
 ## What "Setup Document Theme" does
 
