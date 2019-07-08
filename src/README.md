@@ -33,7 +33,7 @@ Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Sty
 
 ## Warning
 
-There might be unexpected changes happens. If any content is missing, try the "History" feature of MS Word. (Open folder in OneDrive Online -> Right click the file -> Version history)
+There might be unexpected changes happen. If any content is missing, try the "History" feature of MS Word. (Open folder in OneDrive Online -> Right click the file -> Version history)
 
 ## Why MS Word (Office 365)
 
@@ -42,7 +42,7 @@ There might be unexpected changes happens. If any content is missing, try the "H
 * Real-time collaborative editing (buggy but usable)
 * Version history (extremely buggy comparing to ...)
 * Available for all over the world (including China)
-* Free! (For personal use) (For developers: We paid Office 365!)
+* Free! (For personal use) (For our team: We paid Office 365!)
 * ~~Rich functionality~~ Rich bugs
 
 ## What "Remark Document" does
