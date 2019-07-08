@@ -24,7 +24,7 @@ Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Sty
 
 <!-- INSTALL SECTION END -->
 
-## Add-in Usage
+## Usage
 
 1. Carefully read the Readme and Warning before using it
 1. (Optional) Setup the document theme
