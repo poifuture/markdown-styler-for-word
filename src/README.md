@@ -18,7 +18,7 @@ Our team is actively using it for writing our meeting notes.
 
 <!-- INSTALL SECTION BEGIN  -->
 
-## Install Add-in
+## Install
 
 Open MS Word Online -> Insert -> Office Add-ins -> Store -> Search "Markdown Styler" -> Add
 
