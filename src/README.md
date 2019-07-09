@@ -52,9 +52,9 @@ There might be unexpected changes happen. If any content is missing, try the "Hi
 
 1. Clear all existing styles
 1. Format your document with [Prettier](https://github.com/prettier/prettier)
-   1. Prettier will format your markdown
+    1. Prettier will format your markdown
     1. Prettier will format your front matter
-   1. [Not Implemented] Prettier will format your code block
+    1. [Not Implemented] Prettier will format your code block
 1. Parse your markdown styles with [Remark](https://github.com/remarkjs/remark)
 1. [Not Implemented] ~~Apply syntax highlights to your code block with [Highlight.js](https://github.com/highlightjs/highlight.js/)~~
 1. [Not Implemented] ~~Watch live changes and apply style after typing Enter~~
