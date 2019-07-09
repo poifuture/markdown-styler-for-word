@@ -22,7 +22,7 @@ Our team is actively using it for writing our meeting notes.
 
 Open MS Word Online -> Insert" -> "Office Add-ins" -> "Store -> Search "Markdown Styler" -> Add
 
-If the add-in is succesfully installed, the add-in will appear in the "Home" tab with a "Remark Selection" button.
+If the add-in is successfully installed, the add-in will appear in the "Home" tab with a "Remark Selection" button.
 
 <!-- INSTALL SECTION END -->
 
