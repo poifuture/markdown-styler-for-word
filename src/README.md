@@ -28,7 +28,6 @@ If the add-in is successfully installed, the add-in will appear in the "Home" ta
 
 ## Usage
 
-1. Click "Option" in "Markdown Styler" section (click "..." if you don't find it)
 1. Carefully read the Readme and Warning before using it
 1. (Optional) (Not Implemented) Setup the document theme for a better style (e.g. monospace font)
 1. Click "Remark Document" (it will style the whole document)
