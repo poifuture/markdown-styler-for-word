@@ -28,7 +28,7 @@ If the add-in is successfully installed, the add-in will appear in the "Home" ta
 
 ## Usage
 
-1. Carefully read the Readme and Warning before using it
+1. Carefully read the Readme and Warning before using it (You can find Readme at Home Tab -> Markdown Styler Menu -> Insert Readme)
 1. (Optional) (Not Implemented) Setup the document theme for a better style (e.g. monospace font)
 1. Click "Remark Document" (it will style the whole document)
 1. (Optional) Customize the built-in styles (Normal, Heading1, etc.) of the document theme in MS Word
