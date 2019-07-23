@@ -2,7 +2,6 @@ import { Record, List, Map } from "immutable"
 import * as React from "react"
 import * as Fabric from "office-ui-fabric-react"
 import HeroList from "./HeroList"
-import Progress from "./Progress"
 import Styler from "../../core/styler"
 import ReadmeMarkdown from "raw-loader!../../README.md"
 import DEBUG from "../../core/debug"
@@ -11,7 +10,6 @@ import DEBUG from "../../core/debug"
 
 export interface AppPropsType {
   title: string
-  isOfficeInitialized: boolean
 }
 interface MessageType {
   id: string
@@ -163,11 +161,15 @@ export default class App extends React.Component<AppPropsType, AppStateType> {
   }
 
   clickDevButton = async () => {
-    console.log("State: ", this.state)
     const devMarkdown = `
 It's a **strong** word
 `
     return Word.run(async context => {
+      // console.debug("custom Xml: ",context.document.customXmlParts)
+      context.document.properties.load()
+      await context.sync()
+      console.debug("properties: ", context.document.properties)
+      // context.document.set({template:""})
       const paragraph = context.document.body.insertText(
         devMarkdown,
         Word.InsertLocation.replace
@@ -194,7 +196,7 @@ It's a **strong** word
         await context.sync()
         context.document.body.paragraphs.load()
         await context.sync()
-        const CongratsParagraph = context.document.body.paragraphs.items[3].insertParagraph(
+        const CongratsParagraph = context.document.body.paragraphs.items[5].insertParagraph(
           CongratsText,
           Word.InsertLocation.after
         )
@@ -209,6 +211,10 @@ It's a **strong** word
 
   setupTheme = async () => {
     console.debug("Setting up document theme...")
+    window.open(
+      "https://github.com/poifuture/markdown-styler-for-word#theme",
+      "_blank"
+    )
     console.error("Not Implemented")
   }
 
@@ -280,16 +286,6 @@ It's a **strong** word
   }
 
   render() {
-    if (!this.props.isOfficeInitialized) {
-      return (
-        <Progress
-          title={this.props.title}
-          logo="assets/logo-filled.png"
-          message="Make Word a markdown friendly collaborative editor"
-        />
-      )
-    }
-
     return (
       <div className="ms-welcome">
         <HeroList

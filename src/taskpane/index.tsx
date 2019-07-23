@@ -16,14 +16,22 @@ const title = "Markdown Styler"
 const render = (App?) => {
   ReactDOM.render(
     <AppContainer>
-      {Bootstrap ? (
-        <Bootstrap
-          app={App}
-          title={title}
-          isOfficeInitialized={isOfficeInitialized}
-        />
+      {Bootstrap && isOfficeInitialized ? (
+        <Bootstrap app={App} title={title} />
       ) : (
-        <p>Splash Screen...</p>
+        <div>
+          <img src="assets/logo-filled.png"></img>
+          <h1>Markdown Styler</h1>
+          <p>Make Word a markdown friendly collaborative editor</p>
+          <p>
+            Loading Markdown Styler App ...
+            {Bootstrap && <span>done</span>}
+          </p>
+          <p>
+            Loading Office API ...
+            {isOfficeInitialized && <span>done</span>}
+          </p>
+        </div>
       )}
     </AppContainer>,
     document.getElementById("container")
@@ -33,6 +41,7 @@ const render = (App?) => {
 /* Render application after modules initialize */
 Office.initialize = () => {
   isOfficeInitialized = true
+  OfficeExtension.config.extendedErrorLogging = true
   console.info("Office initialized.")
   render()
 }
@@ -42,7 +51,7 @@ BootstrapModulePromise.then(module => {
   render()
 })
 
-/* Initial render showing a progress bar */
+/* Initial render showing a splash screen */
 render()
 
 if ((module as any).hot) {

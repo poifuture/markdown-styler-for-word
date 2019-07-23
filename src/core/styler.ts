@@ -4,6 +4,8 @@ import RemarkFrontmatter from "remark-frontmatter"
 import RemarkParse from "remark-parse"
 import Prettier from "prettier/standalone"
 import PrettierMarkdown from "prettier/parser-markdown"
+import PrettierYaml from "prettier/parser-yaml"
+import PrettierBabylon from "prettier/parser-babylon"
 import { hex } from "./utils"
 
 const DEFAULT_SETTINGS = {
@@ -51,7 +53,6 @@ const getPointParagraph = async (
   console.debug("Geting point paragraph... ", point)
   range.paragraphs.load("items")
   await range.paragraphs.context.sync()
-  console.debug("Got paragraph: ", range.paragraphs.items[point.line - 1])
   return range.paragraphs.items[point.line - 1]
 }
 
@@ -65,7 +66,6 @@ const getPointCursur = async (
   const charRanges = pointParagraph.split([""])
   charRanges.load("items")
   await charRanges.context.sync()
-  console.debug("Got paragraph char cursors: ", charRanges)
   const pointCursor = options.isEnd
     ? charRanges.items[point.column - 2]
     : charRanges.items[point.column - 1]
@@ -143,6 +143,12 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
           await titleParagraph.context.sync()
           break
         }
+        case "table": {
+          const nodeRange = await getNodeRange(range, node)
+          nodeRange.font.name = "Courier New"
+          nodeRange.font.size = 10
+          break
+        }
         case "heading": {
           const nodeHeading: any = node
           const WordHeadingStyles = [
@@ -164,6 +170,14 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
           nodeParagraph.styleBuiltIn = WordHeadingStyles[nodeHeading.depth]
           break
         }
+        case "blockquote": {
+          const nodeParagraph = await getPointParagraph(
+            range,
+            node.position.start
+          )
+          nodeParagraph.styleBuiltIn = Word.Style.quote
+          break
+        }
         case "strong": {
           if (!inlineStyle) {
             break
@@ -171,6 +185,40 @@ const RemarkWord: UnifiedModule.Attacher = function(options: {
           const nodeRange = await getNodeRange(range, node)
           nodeRange.styleBuiltIn = Word.Style.strong
           nodeRange.font.color = "darkblue"
+          break
+        }
+        case "delete": {
+          if (!inlineStyle) {
+            break
+          }
+          const nodeRange = await getNodeRange(range, node)
+          nodeRange.font.strikeThrough = true
+          break
+        }
+        case "inlineCode": {
+          if (!inlineStyle) {
+            break
+          }
+          const nodeRange = await getNodeRange(range, node)
+          nodeRange.font.color = "darkred"
+          break
+        }
+        case "link": {
+          if (!inlineStyle) {
+            break
+          }
+          const nodeLink: any = node
+          const nodeRange = await getNodeRange(range, node)
+          nodeRange.hyperlink = nodeLink.url
+          break
+        }
+        case "definition": {
+          if (!inlineStyle) {
+            break
+          }
+          const nodeDefinition: any = node
+          const nodeRange = await getNodeRange(range, node)
+          nodeRange.hyperlink = nodeDefinition.url
           break
         }
       }
@@ -229,7 +277,7 @@ const ProcessPrettier = async (
     console.debug("Prettifying markdown document...")
     const prettyText: string = Prettier.format(originalText, {
       parser: "markdown",
-      plugins: [PrettierMarkdown],
+      plugins: [PrettierMarkdown, PrettierYaml, PrettierBabylon],
       proseWrap: options.proseWrap ? "always" : "never", // [always,never,preserve]
     })
     console.info("Pretty Text: ", prettyText, await hex(prettyText))

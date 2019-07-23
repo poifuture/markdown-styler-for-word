@@ -1,6 +1,7 @@
 ---
 title: Markdown Styler for MS Word
 author: poifuture
+homepage: https://github.com/poifuture/markdown-styler-for-word
 ---
 
 <!-- prettier-ignore-start -->
@@ -58,12 +59,20 @@ There might be unexpected changes happen. If any content is missing, try the "Hi
 1. [Not Implemented] ~~Apply syntax highlights to your code block with [Highlight.js](https://github.com/highlightjs/highlight.js/)~~
 1. [Not Implemented] ~~Watch live changes and apply style after typing Enter~~
 
-## What "Setup Theme" does
+## What "Setup Theme" does {#theme}
 
-* Nothing
-* [Not Implemented] ~~Change the theme font of your document~~
-  - Font: Courier New (A monospace font)
-  - Size: 10 (To make each line contains >=80 chars)
+**Nothing**
+
+Due to the limitation of Word, it's not possible to modify the template through the add-in. You'll have to manually apply a markdown friendly template by the following steps.
+
+1. Open your document in Desktop Word (Edit in Word)
+1. In Desktop Work, search for "templates" and click "Add-ins" action
+1. In "Templates and Add-ins" window, Attach `https://poifuture.github.io/markdown-styler-for-word/Markdown.dotx`. (Note: you can download and modify the template to fit your needs)
+1. Check "Automatically update document styles" and click "OK"
+
+* [Not Implemented] ~~Change the theme of your document~~
+  - ~~Font: Courier New (A monospace font)~~
+  - ~~Size: 10 (To make each line contains >=80 chars)~~
 
 ## Examples
 
@@ -123,10 +132,13 @@ Try [SlackEdit](https://stackedit.io/) if you prefer an independent app!
 
 ## Appreciation
 
-This tool can't be real without the awesome work of [Remark](https://github.com/remarkjs/remark), [Prettier](https://github.com/prettier/prettier) and [MSOffice](https://github.com/OfficeDev/office-js)
+This tool can't be real without the awesome work of [Remark](https://github.com/remarkjs/remark), [Prettier][Prettier] and [MSOffice][MSOffice]
 
 ## Contributing?
 
 Warm Welcome!
+
+[MSOffice]: https://github.com/OfficeDev/office-js
+[Prettier]: https://github.com/prettier/prettier
 
 <!-- prettier-ignore-end -->
