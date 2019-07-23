@@ -3,9 +3,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
-  <Id>05c2e1c9-3e1d-406e-9a91-e9ac64854143</Id>
-  <Version>2019.0706.24.0</Version>
-  <ProviderName>Poifuture</ProviderName>
+  <Id>05c2e1c9-3e1d-406e-9a91-e9ac64854142</Id>
+  <Version>1.2019.0724.30</Version>
+  <ProviderName>poifuture</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Markdown Styler"/>
   <Description DefaultValue="Style your markdown document."/>
