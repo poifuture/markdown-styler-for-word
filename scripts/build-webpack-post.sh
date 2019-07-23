@@ -16,7 +16,7 @@ cat ./manifest.xml \
 
 cp ./src/index.html ./dist/index.html
 cp ./src/_config.yml ./dist/_config.yml
-cp ./PoiMarkdown.dotx ./dist/PoiMarkdown.dotx
+cp ./Markdown.dotx ./dist/Markdown.dotx
 
 cat ./src/README.md \
   | sed "s/^.*prettier-ignore.*$/<!-- This file is auto generated, change src\/README.md instead. -->/g" \
