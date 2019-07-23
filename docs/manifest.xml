@@ -18,6 +18,10 @@
   <Hosts>
     <Host Name="Document"/>
   </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.3">
+    </Sets>
+  </Requirements>
   <DefaultSettings>
     <SourceLocation DefaultValue="https://poifuture.github.io/markdown-styler-for-word/taskpane.html"/>
   </DefaultSettings>
