@@ -11,7 +11,10 @@ cat ./manifest.xml \
   | sed "s/Markdown[ ]Styler[ ]Dogfood/Markdown Styler/g" \
   | sed "s/https[:][/][/]localhost[:]3000/https:\/\/poifuture.github.io\/markdown-styler-for-word/g" \
   | sed "s/[<]Version[>].*[<][/]Version[>]/<Version>1.$(date '+%Y').$(date '+%m%d').$version<\/Version>/g" \
+  | sed "s/[<]Id[>].{36}[<][/]Id[>]/<Id>05c2e1c9-3e1d-406e-9a91-e9ac64854143<\/Id>/g" \
   > ./dist/manifest.xml
+
+cp ./PoiMarkdown.dotx ./dist/PoiMarkdown.dotx
 
 cat ./src/README.md \
   | sed "s/^.*prettier-ignore.*$/<!-- This file is auto generated, change src\/README.md instead. -->/g" \
