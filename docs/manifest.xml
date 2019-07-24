@@ -4,7 +4,7 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" 
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
   <Id>05c2e1c9-3e1d-406e-9a91-e9ac64854143</Id>
-  <Version>1.2019.0724.29</Version>
+  <Version>19.07.25.1</Version>
   <ProviderName>poifuture</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Markdown Styler"/>
@@ -20,7 +20,7 @@
   </Hosts>
   <Requirements>
     <Sets DefaultMinVersion="1.3">
-      <Set Name="DocumentEvents" MinVersion="1.3"/>
+      <Set Name="DocumentEvents" MinVersion="1.1"/>
     </Sets>
   </Requirements>
   <DefaultSettings>

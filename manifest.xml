@@ -20,7 +20,7 @@
   </Hosts>
   <Requirements>
     <Sets DefaultMinVersion="1.3">
-      <Set Name="DocumentEvents" MinVersion="1.3"/>
+      <Set Name="DocumentEvents" MinVersion="1.1"/>
     </Sets>
   </Requirements>
   <DefaultSettings>
